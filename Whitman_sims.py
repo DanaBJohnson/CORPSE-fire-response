@@ -18,7 +18,7 @@ SOM_init={'CO2': array(0.0),    # Cumulative CO2 from microbial respiration
  
 # Parameters controlling the model
 params={
-    'vmaxref':{'Fast':9.0,'Slow':0.25,'Necro':4.5}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
+    'vmaxref':{'Fast':50.0,'Slow':0.25,'Necro':25}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
     'Ea':{'Fast':5e3,'Slow':30e3,'Necro':5e3},      # Activation energy (controls T dependence)
     'kC':{'Fast':0.01,'Slow':0.01,'Necro':0.01},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
     'gas_diffusion_exp':0.6,  # Determines suppression of decomposition at high soil moisture
@@ -40,11 +40,11 @@ t=arange(0,120/365,1.0/365)
 initvals={}
 paramsets={}
 
-# Resistant: Low biomass loss, fast growth
+# Resistant: Low biomass loss, moderate growth (fire survivors)
 initvals['Fast-growing survivor']=copy.deepcopy(SOM_init)      # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
 initvals['Fast-growing survivor']['livingMicrobeC']=array(1.0) # Start with a high amount of initial microbial biomass. Assumes this simulation starts right after the fire
 paramsets['Fast-growing survivor']=copy.deepcopy(params)
-paramsets['Fast-growing survivor']['vmaxref']['Fast']=10.0     # Higher potential decomposition rate for more labile C
+paramsets['Fast-growing survivor']['vmaxref']['Fast']=25.0     # Higher potential decomposition rate for more labile C
 
 
 
@@ -52,7 +52,8 @@ paramsets['Fast-growing survivor']['vmaxref']['Fast']=10.0     # Higher potentia
 initvals['Fire susceptible']=copy.deepcopy(SOM_init)
 initvals['Fire susceptible']['livingMicrobeC']=array(0.05)    # Low initial microbial biomass
 paramsets['Fire susceptible']=copy.deepcopy(params)
-paramsets['Fire susceptible']['vmaxref']['Fast']=6.0          # Slower maximum decomposition rate for labile C
+paramsets['Fire susceptible']['vmaxref']['Fast']=5.0          # Slower maximum decomposition rate for labile C
+paramsets['Fire susceptible']['vmaxref']['Necro']=2.5          # Slower maximum decomposition rate for necromass C
 
 
 
@@ -60,7 +61,7 @@ paramsets['Fire susceptible']['vmaxref']['Fast']=6.0          # Slower maximum d
 initvals['Post-fire rebounder']=copy.deepcopy(SOM_init)
 initvals['Post-fire rebounder']['livingMicrobeC']=array(0.05) # Low initial microbial biomass
 paramsets['Post-fire rebounder']=copy.deepcopy(params)
-paramsets['Post-fire rebounder']['vmaxref']['Fast']=18.0      # Very fast potential decomposition/growth rate
+paramsets['Post-fire rebounder']['vmaxref']['Fast']=50.0      # Very fast potential decomposition/growth rate
 
 
 
@@ -68,7 +69,11 @@ paramsets['Post-fire rebounder']['vmaxref']['Fast']=18.0      # Very fast potent
 initvals['Slow-growing survivor']=copy.deepcopy(SOM_init)
 initvals['Slow-growing survivor']['livingMicrobeC']=array(1.0) # High initial microbial biomass
 paramsets['Slow-growing survivor']=copy.deepcopy(params)
-paramsets['Slow-growing survivor']['vmaxref']['Fast']=6.0      # Slower decomposition/growth rate
+paramsets['Slow-growing survivor']['vmaxref']['Fast']=5.0      # Slower decomposition/growth rate
+paramsets['Slow-growing survivor']['vmaxref']['Necro']=2.5      # Slower decomposition/growth rate
+
+
+# Potential 5th group? Dispersal - low biomass that increases gradually. Moderate growth rate
 
 
 # Set up a data structure to hold the results of the different simulations
