@@ -171,5 +171,5 @@ def run_models_iterator(Tmin,Tmax,thetamin,thetamax,times,inputs,params,clay,ini
 
 # Functions for adding together all the C pools. They work on either dictionary or dataframe data types because both have the same names for the pools
 def totalCarbon(SOM):
-    return SOM['uFastC']+SOM['uSlowC']+SOM['uNecroC']+SOM['pFastC']+SOM['pSlowC']+SOM['pNecroC']+SOM['livingMicrobeC']
+    return SOM['uFastC']+SOM['uSlowC']+SOM['uNecroC']+SOM['uPyC']+SOM['pFastC']+SOM['pSlowC']+SOM['pNecroC']+SOM['pPyC']+SOM['livingMicrobeC']
     

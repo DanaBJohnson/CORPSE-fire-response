@@ -53,14 +53,14 @@ def check_params(params):
              tProtected=75.0;     Protected C turnover time (years)
              protection_rate=[1.0,0.0,1.0];  Protected carbon formation rate (year-1)'''
 
-    from numpy import iterable,array
+    #from numpy import iterable,array
     unused_params=expected_params.copy()
     for k in params.keys():
         if k not in expected_params:
             raise ValueError('Parameter set contains unexpected parameter %s'%k)
         unused_params.pop(k)
-        if iterable(params[k]):
-            params[k]=array(params[k])
+        #if iterable(params[k]):
+         #   params[k]=array(params[k])
     if len(unused_params)>0:
         for k in unused_params.keys():
             print ('Missing parameter: %s [%s]'%(k,unused_params[k]))
@@ -129,7 +129,8 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
 def decompRate(SOM,T,theta,params):
 
     # This only really needs to be calculated once
-    # This corrects the units of vmaxref for the moisture function, so the units can be in actual 1/time. 
+    # This corrects the units of vmaxref for the moisture function, so the 
+    # units can be in actual 1/time. 
     # This essentially sets the maximum value of the moisture function to 1
     if params['new_resp_units']:
         theta_resp_max=params['substrate_diffusion_exp']/(params['gas_diffusion_exp']*(1.0+params['substrate_diffusion_exp']/params['gas_diffusion_exp']))
@@ -164,6 +165,7 @@ def Vmax(T,params):
     return Vmax
 
 # Add together the C types. prefix is for specifying protected or unprotected (p or u)
+#  Doesn't include living MBC
 def sumCtypes(SOM,prefix):
     out=SOM[prefix+chem_types[0]+'C']
     if len(chem_types)>1:
