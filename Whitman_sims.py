@@ -7,7 +7,7 @@ import copy
 # Initial pools for soil organic matter simulation
 # There are three kinds of chemically-defined C (Fast, slow, and microbial necromass). "Fast" has higher maximum decomposition rate and microbial CUE
 # Each C type can be in a protected or unprotected state. When protected, it is not subject to microbial decomposition
-SOM_init={'CO2': array(0.0),    # Cumulative CO2 from microbial respiration
+SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
  'livingMicrobeC': array(1.0), # Active, living microbial biomass
  'pFastC': array(0.0),         # Protected fast-decomposing C
  'pNecroC': array(0.0),        # Protected microbial necromass C
@@ -18,7 +18,7 @@ SOM_init={'CO2': array(0.0),    # Cumulative CO2 from microbial respiration
  'uSlowC': array(86),         # Unprotected slow-decomposing C, Changed value from 86 to 60.2 based on calibration results
  'uPyC': array(4.0)}            # Unprotected PyC
  
-# Parameters controlling the model
+# Parameters controlling the model (sandy soil, no burn)
 params={
     'vmaxref':{'Fast':5.0,'Slow':0.25,'Necro':5.0, 'Py':0.1}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
     'Ea':{'Fast':5e3,'Slow':30e3,'Necro':5e3, 'Py':35e3},      # Activation energy (controls T dependence)
@@ -34,6 +34,13 @@ params={
     'new_resp_units':True,   # At some point I changed the units of vmaxref to be normalized for other factors so they are actually in year-1 units. Leave this as True values that are easier to interpret.
 }
 
+
+envir_vals={'thetamin': array(0.5),
+              'thetamax': array(0.7),
+              'porosity': array(0.4)}
+
+
+
 import CORPSE_array
 CORPSE_array.check_params(params)
 
@@ -44,11 +51,12 @@ t=arange(0,90/365,1/365)
 # Here we set up an empty python dictionary to hold the different sets of parameters and initial values
 initvals={}
 paramsets={}
+envir_params={}
 
 # Microbial community, no burn
 initvals['no burn sandy soil']=copy.deepcopy(SOM_init)      # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
 paramsets['no burn sandy soil']=copy.deepcopy(params)
-
+envir_params['no burn sandy soil']=copy.deepcopy(envir_vals)
 
 # Sandy soil, high severity burn
 initvals['high sev burn sandy soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
@@ -66,7 +74,10 @@ paramsets['high sev burn sandy soil']['eup']['Fast'] = 0.5        #
 paramsets['high sev burn sandy soil']['eup']['Slow'] = 0.3
 paramsets['high sev burn sandy soil']['eup']['Necro'] = 0.5
 paramsets['high sev burn sandy soil']['eup']['Py'] = 0.1
-
+envir_params['high sev burn sandy soil']=copy.deepcopy(envir_vals)
+envir_params['high sev burn sandy soil']['thetamin']=array(0.5)
+envir_params['high sev burn sandy soil']['thetamax']=array(0.7)
+envir_params['high sev burn sandy soil']['porosity']=array(0.4)
 
 # Org. soil, no burn
 initvals['no burn org soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
@@ -84,6 +95,10 @@ paramsets['no burn org soil']['eup']['Fast'] = 0.7        #
 paramsets['no burn org soil']['eup']['Slow'] = 0.4
 paramsets['no burn org soil']['eup']['Necro'] = 0.7
 paramsets['no burn org soil']['eup']['Py'] = 0.1
+envir_params['no burn org soil']=copy.deepcopy(envir_params)
+envir_params['no burn org soil']['thetamin']=array(0.5)
+envir_params['no burn org soil']['thetamax']=array(0.7)
+envir_params['no burn org soil']['porosity']=array(0.9)
 
 
 # Org soil, high severity burn
@@ -102,6 +117,10 @@ paramsets['high sev burn org soil']['eup']['Fast'] = 0.4        #
 paramsets['high sev burn org soil']['eup']['Slow'] = 0.3
 paramsets['high sev burn org soil']['eup']['Necro'] = 0.4
 paramsets['high sev burn org soil']['eup']['Py'] = 0.1
+envir_params['high sev burn org soil']=copy.deepcopy(envir_params)
+envir_params['high sev burn org soil']['thetamin']=array(0.5)
+envir_params['high sev burn org soil']['thetamax']=array(0.7)
+envir_params['high sev burn org soil']['porosity']=array(0.9)
 
 
 
@@ -110,8 +129,12 @@ results={}
 # Goes through each functional type and runs a simulation using the appropriate set of parameters and initial values
 # Simulations are assuming a constant temperature of 20 C and constant moisture of 60% of saturation
 # Inputs are empty because this is running as an incubation without any constant inputs of C
+
+
+
 for functype in initvals:
-    results[functype] = CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
+    results[functype] = CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=envir_params[functype]['thetamin'],
+                                                      thetamax=envir_params[functype]['thetamax'],
                                             times=t,inputs={},clay=2.5,initvals=initvals[functype],params=paramsets[functype])
 
 

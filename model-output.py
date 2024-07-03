@@ -9,8 +9,8 @@ Created on Thu Jun 27 14:36:32 2024
 import pandas as pd
 from numpy import arange
 import Whitman_sims
-import copy
 import CORPSE_solvers
+import CORPSE_array
 
 t=arange(0,70/365,1/365) # t should be the length of the incubations that we are comparing to.
             
@@ -22,14 +22,15 @@ import time
 timestr = time.strftime('%Y%m%d')
 
 
-df = pd.DataFrame({"time":['time'],
+df = pd.DataFrame({"time":[0],
                    'simulation':['simul'],
-                   'cumulative_C_CO2': ['CO2'],
-                   'uFastC': ['uFastC'],
-                   'uSlowC': ['uSlowC'],
-                   'uNecroC': ['uNecroC'],
-                   'uPyC': ['uPyC'],
-                   'livingMicrobeC': ['livingMicrobeC']
+                   'cumulative_C_CO2': [0],
+                   'total_initial_C':[0],
+                   'uFastC': [0],
+                   'uSlowC': [0],
+                   'uNecroC': [0],
+                   'uPyC': [0],
+                   'livingMicrobeC': [0]
                     })  
 
           
@@ -43,6 +44,11 @@ for simul in list(Whitman_sims.initvals.keys()):
     
     results[simul] = CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
                                                     times=t,inputs={},clay=2.5,initvals=Whitman_sims.initvals[simul],params=Whitman_sims.paramsets[simul])
+    
+    # Ned to include cumulative C-CO2 as percent of initial total C
+    totalC=CORPSE_array.sumCtypes(Whitman_sims.results[simul][0], 'u')+CORPSE_array.sumCtypes(Whitman_sims.results[simul][0], 'p')
+    total_initial_C = totalC[0]
+    
     
     output = pd.DataFrame(results[simul][0]) # Create dataframe containing simulation output
     end_time = int(t.max()*365) # Create a variable containing the last timestamp in the simulation
@@ -70,8 +76,15 @@ for simul in list(Whitman_sims.initvals.keys()):
     df_temp = pd.DataFrame(temp)
     df_temp.loc[:, "time"]=t
     df_temp.loc[:, "simulation"]=simul
+    df_temp.loc[:, "total_initial_C"]=total_initial_C
+    
       
     # df = pd.concat([df, df_temp])
+
+
+
+
+
 
 
     df = pd.concat([df, df_temp])
