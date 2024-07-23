@@ -46,7 +46,9 @@ for simul in list(Whitman_sims.initvals.keys()):
                                                     times=t,inputs={},clay=2.5,initvals=Whitman_sims.initvals[simul],params=Whitman_sims.paramsets[simul])
     
     # Ned to include cumulative C-CO2 as percent of initial total C
-    totalC=CORPSE_array.sumCtypes(Whitman_sims.results[simul][0], 'u')+CORPSE_array.sumCtypes(Whitman_sims.results[simul][0], 'p')
+    #totalC=CORPSE_array.sumCtypes(Whitman_sims.results[simul][0], 'u')+CORPSE_array.sumCtypes(Whitman_sims.results[simul][0], 'p')
+    #total_initial_C = totalC[0]
+    totalC=CORPSE_solvers.totalCarbon(Whitman_sims.results[simul][0])
     total_initial_C = totalC[0]
     
     

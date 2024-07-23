@@ -8,19 +8,19 @@ import copy
 # There are three kinds of chemically-defined C (Fast, slow, and microbial necromass). "Fast" has higher maximum decomposition rate and microbial CUE
 # Each C type can be in a protected or unprotected state. When protected, it is not subject to microbial decomposition
 SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
- 'livingMicrobeC': array(1.0), # Active, living microbial biomass
+ 'livingMicrobeC': array(5.0), # Active, living microbial biomass
  'pFastC': array(0.0),         # Protected fast-decomposing C
  'pNecroC': array(0.0),        # Protected microbial necromass C
  'pSlowC': array(0.0),         # Protected slow-decomposing C
  'pPyC': array(0.0),            # Protected PyC
- 'uFastC': array(10.0),          # Unprotected fast-decomposing C, Changed value from 10 to 11 based on calibration results
- 'uNecroC': array(1.0),        # Unprotected microbial necromass C, 
- 'uSlowC': array(86),         # Unprotected slow-decomposing C, Changed value from 86 to 60.2 based on calibration results
+ 'uFastC': array(3.0),          # Unprotected fast-decomposing C, Changed value from 10 to 11 based on calibration results
+ 'uNecroC': array(3.0),        # Unprotected microbial necromass C, 
+ 'uSlowC': array(88),         # Unprotected slow-decomposing C, Changed value from 86 to 60.2 based on calibration results
  'uPyC': array(4.0)}            # Unprotected PyC
  
 # Parameters controlling the model (sandy soil, no burn)
 params={
-    'vmaxref':{'Fast':5.0,'Slow':0.25,'Necro':5.0, 'Py':0.1}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
+    'vmaxref':{'Fast':8.0,'Slow':0.2,'Necro':4.0, 'Py':0.1}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
     'Ea':{'Fast':5e3,'Slow':30e3,'Necro':5e3, 'Py':35e3},      # Activation energy (controls T dependence)
     'kC':{'Fast':0.01,'Slow':0.01,'Necro':0.01, 'Py':0.01},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
     'gas_diffusion_exp':0.6,  # Determines suppression of decomposition at high soil moisture
@@ -28,7 +28,7 @@ params={
     'minMicrobeC':1e-3,       # Minimum microbial biomass (fraction of total C). Prevents microbes from going extinct and allows some slow decomposition under adverse conditions
     'Tmic':0.25,              # Microbial biomass mean lifetime (years)
     'et':0.6,                 # Fraction of microbial biomass turnover (death) that goes to necromass instead of being immediately mineralized to CO2
-    'eup':{'Fast':0.7,'Slow':0.4,'Necro':0.7, 'Py':0.1},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
+    'eup':{'Fast':0.8,'Slow':0.4,'Necro':0.8, 'Py':0.1},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
     'tProtected':75.0,        # Protected C turnover time (years). This is the time scale for which protected C is released back to unprotected state.
     'protection_rate':{'Fast':0.0,'Slow':0.001,'Necro':0, 'Py':0}, # Protected carbon formation rate (year-1). Higher number means more will become protected. Can be modified as a function of soil texture/mineralogy to represent different sorption potentials
     'new_resp_units':True,   # At some point I changed the units of vmaxref to be normalized for other factors so they are actually in year-1 units. Leave this as True values that are easier to interpret.
@@ -45,7 +45,7 @@ import CORPSE_array
 CORPSE_array.check_params(params)
 
 # This makes an array of all the model time steps (in units of years). In this case, it starts at zero, ends at 120 days, and has a time step of one day
-t=arange(0,90/365,1/365)
+t=arange(0,365/365,1/365)
 
 # This section is setting up different initial values and parameters for different simulations representing microbial community traits
 # Here we set up an empty python dictionary to hold the different sets of parameters and initial values
@@ -60,15 +60,15 @@ envir_params['no burn sandy soil']=copy.deepcopy(envir_vals)
 
 # Sandy soil, high severity burn
 initvals['high sev burn sandy soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['high sev burn sandy soil']['livingMicrobeC']=array(0.8) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
-initvals['high sev burn sandy soil']['uFastC']=array(0.5) 
+initvals['high sev burn sandy soil']['livingMicrobeC']=array(0.6) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['high sev burn sandy soil']['uFastC']=array(0.75) 
 initvals['high sev burn sandy soil']['uNecroC']=array(0.5) 
 initvals['high sev burn sandy soil']['uSlowC']=array(80) # Changed value from 80 to 100 based on calibration results
 initvals['high sev burn sandy soil']['uPyC']=array(15)
 paramsets['high sev burn sandy soil']=copy.deepcopy(params)
-paramsets['high sev burn sandy soil']['vmaxref']['Fast']=100.0     # 
-paramsets['high sev burn sandy soil']['vmaxref']['Slow']=0.2
-paramsets['high sev burn sandy soil']['vmaxref']['Necro']=100.0
+paramsets['high sev burn sandy soil']['vmaxref']['Fast']=75.0     # 
+paramsets['high sev burn sandy soil']['vmaxref']['Slow']=0.15
+paramsets['high sev burn sandy soil']['vmaxref']['Necro']=75.0
 paramsets['high sev burn sandy soil']['vmaxref']['Py']=0.05
 paramsets['high sev burn sandy soil']['eup']['Fast'] = 0.5        # 
 paramsets['high sev burn sandy soil']['eup']['Slow'] = 0.3
@@ -81,17 +81,17 @@ envir_params['high sev burn sandy soil']['porosity']=array(0.4)
 
 # Org. soil, no burn
 initvals['no burn org soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['no burn org soil']['livingMicrobeC']=array(1.0) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
-initvals['no burn org soil']['uFastC']=array(7.0) 
-initvals['no burn org soil']['uNecroC']=array(1.0) 
-initvals['no burn org soil']['uSlowC']=array(86) # Changed value from 86.0 to 60 based on calibration results
+initvals['no burn org soil']['livingMicrobeC']=array(6.0) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['no burn org soil']['uFastC']=array(6.0) 
+initvals['no burn org soil']['uNecroC']=array(1.2) 
+initvals['no burn org soil']['uSlowC']=array(72) # Changed value from 86.0 to 60 based on calibration results
 initvals['no burn org soil']['uPyC']=array(5.0)
 paramsets['no burn org soil']=copy.deepcopy(params)
 paramsets['no burn org soil']['vmaxref']['Fast']=7.25     # 
-paramsets['no burn org soil']['vmaxref']['Slow']=0.25
+paramsets['no burn org soil']['vmaxref']['Slow']=0.1
 paramsets['no burn org soil']['vmaxref']['Necro']=7.25
 paramsets['no burn org soil']['vmaxref']['Py']=0.1
-paramsets['no burn org soil']['eup']['Fast'] = 0.7        # 
+paramsets['no burn org soil']['eup']['Fast'] = 0.9        # 
 paramsets['no burn org soil']['eup']['Slow'] = 0.4
 paramsets['no burn org soil']['eup']['Necro'] = 0.7
 paramsets['no burn org soil']['eup']['Py'] = 0.1
@@ -103,14 +103,14 @@ envir_params['no burn org soil']['porosity']=array(0.9)
 
 # Org soil, high severity burn
 initvals['high sev burn org soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['high sev burn org soil']['livingMicrobeC']=array(0.2) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['high sev burn org soil']['livingMicrobeC']=array(0.6) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
 initvals['high sev burn org soil']['uFastC']=array(0.6) 
 initvals['high sev burn org soil']['uNecroC']=array(0.6) 
 initvals['high sev burn org soil']['uSlowC']=array(86) # Changed value from 86 to 60 based on calibration results
 initvals['high sev burn org soil']['uPyC']=array(12)
 paramsets['high sev burn org soil']=copy.deepcopy(params)
 paramsets['high sev burn org soil']['vmaxref']['Fast']=75.0     # 
-paramsets['high sev burn org soil']['vmaxref']['Slow']=0.25
+paramsets['high sev burn org soil']['vmaxref']['Slow']=0.15
 paramsets['high sev burn org soil']['vmaxref']['Necro']=75.0
 paramsets['high sev burn org soil']['vmaxref']['Py']=0.1
 paramsets['high sev burn org soil']['eup']['Fast'] = 0.4        # 
