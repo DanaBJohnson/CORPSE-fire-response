@@ -45,7 +45,7 @@ import CORPSE_array
 CORPSE_array.check_params(params)
 
 # This makes an array of all the model time steps (in units of years). In this case, it starts at zero, ends at 120 days, and has a time step of one day
-t=arange(0,365/365,1/365)
+t=arange(0,70/365,1/365)
 
 # This section is setting up different initial values and parameters for different simulations representing microbial community traits
 # Here we set up an empty python dictionary to hold the different sets of parameters and initial values

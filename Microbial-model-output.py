@@ -30,8 +30,8 @@ df = pd.DataFrame({"time":[0],
                    'uSlowC': [0],
                    'uNecroC': [0],
                    'uPyC': [0],
-                   'livingMicrobeC_slow': [0],
-                   'livingMicrobeC_fast':[0]
+                   'MBC_1': [0],
+                   'MBC_2':[0]
                     })  
 
           
@@ -49,7 +49,7 @@ for simul in list(Microbial_sims.initvals.keys()):
     # Ned to include cumulative C-CO2 as percent of initial total C
     #totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[simul][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[simul][0], 'p')
     #total_initial_C = totalC[0]
-    totalC=Microbial_CORPSE_solvers.totalCarbon(Microbial_sims.results[simul][0])
+    totalC=Microbial_CORPSE_solvers.totalCarbon(Microbial_sims.results[simul][0], Microbial_CORPSE_array.microbial_pools)
     total_initial_C = totalC[0]
     
     
@@ -72,8 +72,8 @@ for simul in list(Microbial_sims.initvals.keys()):
             'uSlowC': output['uSlowC'],
             'uNecroC': output['uNecroC'],
             'uPyC': output['uPyC'],
-            'livingMicrobeC_slow': output['livingMicrobeC_slow'],
-            'livingMicrobeC_fast': output['livingMicrobeC_fast']
+            'MBC_1': output['MBC_1'],
+            'MBC_2': output['MBC_2']
               }
     
     df_temp= {}

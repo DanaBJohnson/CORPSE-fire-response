@@ -15,40 +15,47 @@ from matplotlib import pyplot
 # This section plots the results
 # Each set of results should have the same set of pools as the initial values structure from the beginning of the simulation
 import Microbial_sims
-import Microbial_CORPSE_array as CORPSE_array
+import Microbial_CORPSE_array as Microbial_CORPSE_array
 
-fig,ax=pyplot.subplots(nrows=2,ncols=1,clear=True,num='CORPSE results')
 
-for sim in Microbial_sims.results:
-    totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-    #ax[0].plot(Whitman_sims.t*365,Whitman_sims.results[sim][0]['CO2'].diff()/totalC[0]*100,label=sim) # % of initial C respired each day
-    ax[0].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['livingMicrobeC_slow']/totalC[0]*100, label = sim) # Cumulative % of initial C respired
-    # ax[1].plot(t*365,results[sim][0]['uFastC'],label='Simple')
-    # ax[1].plot(t*365,results[sim][0]['uSlowC'],label='Complex')
-    # ax[1].plot(t*365,results[sim][0]['uNecroC'],label='Necromass')
-    ax[1].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['livingMicrobeC_fast']/totalC[0]*100)
-    #ax[2].plot(t*365,totalC) # How to plot total C in all four functional groups combined?
 
-ax[0].set_xlabel('Time (days)')
-ax[1].set_xlabel('Time (days)')
-# ax[2].set_xlabel('Time (days)')
-ax[0].set_ylabel('Slow-growing microbial biomass \n(% initial C)')
-ax[1].set_ylabel('Fast-growing Microbial biomass \n(% initial C)')
-# ax[1].set_ylabel('SOM pools')
-# ax[1].legend()
-ax[0].legend(fontsize='small')
-ax[0].set_title('Slow-growing microbial biomass', y=1, pad=-15)
-ax[1].set_title('Fast-growing Microbial biomass', y=1, pad=-15)
+if len(Microbial_CORPSE_array.microbial_pools)>1:
+    nrows = len(Microbial_CORPSE_array.microbial_pools)
+    fig,ax=pyplot.subplots(nrows=nrows,ncols=1,clear=True,num='CORPSE results')
+    p=0
+    for m in Microbial_CORPSE_array.microbial_pools:
+        for sim in Microbial_sims.results:
+            totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+            ax[p].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['MBC_'+m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
+            ax[p].set_title('Microbial pool '+m, y=1, pad=-15)
+        p=p+1
+    ax[0].set_ylabel('Microbial pool biomass \n(% initial C)')
+    ax[p-1].set_xlabel('Time (days)')
+    ax[p-1].legend(fontsize='small')
+else:
+    fig,ax=pyplot.subplots(nrows=1,ncols=1,clear=True,num='CORPSE results')
+    for m in Microbial_CORPSE_array.microbial_pools:
+        for sim in Microbial_sims.results:
+            totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+            ax.plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['MBC_'+m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
+            ax.set_title('Microbial pool '+m, y=1, pad=-15)
+    ax.set_ylabel('Microbial pool biomass \n(% initial C)')
+    ax.set_xlabel('Time (days)')
+    ax.legend(fontsize='small')
 
 pyplot.subplots_adjust(hspace = 0.2)
 
 pyplot.show()
 
 
+
+
+
+
 # Create figure XXX
 fig,ax=pyplot.subplots(nrows=2,ncols=2,clear=True,num='CORPSE results')
 for sim in Microbial_sims.results:
-    totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+    totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
     ax[0,0].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uFastC']/totalC[0]*100, label = sim)
     #ax.plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uSlowC']/totalC[0]*100, color = 'blue', label = 'uSlowC')
     ax[1,0].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uNecroC']/totalC[0]*100, label = sim)
@@ -82,7 +89,7 @@ pyplot.show()
 # Put the model and experimental results on the same figure.
 fig,ax=pyplot.subplots(nrows=2,ncols=1,clear=True)
 for sim in Microbial_sims.results:
-    totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+    totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
     if (sim=='no burn sandy soil' or sim=='high sev burn sandy soil'): 
         ax[0].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['CO2']/totalC[0]*100, label = 'Model results: '+sim, linewidth=3.0) # Cumulative % of initial C respired
     else:
@@ -136,8 +143,8 @@ pyplot.show() # Display plot
 #fig,ax=pyplot.subplots(nrows=1)
 
 # for sim in Whitman_sims.results:
-#     totalC=CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'p')
-#     ax.plot(Whitman_sims.t*365, Whitman_sims.results[sim][0]['CO2'] + totalC + Whitman_sims.results[sim][0]['livingMicrobeC'])
+#     totalC=Microbial_CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'p')
+#     ax.plot(Whitman_sims.t*365, Whitman_sims.results[sim][0]['CO2'] + totalC + Whitman_sims.results[sim][0]['MBC'])
 
 # ax.set_xlabel('Time (days)')
 # ax.set_ylabel('Total C in model')
