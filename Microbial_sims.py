@@ -10,8 +10,8 @@ import copy
 SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
  'MBC_1': array(5.0), # Active, living microbial biomass, 
  'MBC_2': array(1.0), # To set number of microbial pools, modify "microbial_pools" list in Microbial_CORPSE_array.py
- 'MBC_3': array(0.50),
- 'MBC_4': array(0.05),
+ 'MBC_3': array(0.00),
+ 'MBC_4': array(0.00),
  'pFastC': array(0.0),         # Protected fast-decomposing C
  'pNecroC': array(0.0),        # Protected microbial necromass C
  'pSlowC': array(0.0),         # Protected slow-decomposing C
@@ -24,7 +24,7 @@ SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
 # Parameters controlling the model (sandy soil, no burn)
 params={
     #'vmaxref':{'Fast':8.0,'Slow':0.2,'Necro':4.0, 'Py':0.1}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
-    'vmaxref_1':{'Fast':7.0,'Slow':0.2,'Necro':3.0, 'Py':0.01}, # Slower-growing microbial pool should have lower Vmax, Button et al. 1991
+    'vmaxref_1':{'Fast':8.0,'Slow':0.2,'Necro':4.0, 'Py':0.1}, # Slower-growing microbial pool should have lower Vmax, Button et al. 1991
     'vmaxref_2':{'Fast':8.0,'Slow':0.2,'Necro':4.0, 'Py':0.05}, # Faster-growing microbial pool should have higher Vmax
     'vmaxref_3':{'Fast':8.0,'Slow':0.3,'Necro':4.0, 'Py':0.2}, # 
     'vmaxref_4':{'Fast':8.0,'Slow':0.2,'Necro':4.0, 'Py':0.05}, # 
@@ -38,7 +38,7 @@ params={
     'et_2':0.6,                 # Fraction of microbial biomass turnover (death) that goes to necromass instead of being immediately mineralized to CO2
     'et_3':0.6, 
     'et_4':0.6, 
-    'eup_1':{'Fast':0.8,'Slow':0.3,'Necro':0.8, 'Py':0.05},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
+    'eup_1':{'Fast':0.8,'Slow':0.4,'Necro':0.8, 'Py':0.1},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
     'eup_2':{'Fast':0.7,'Slow':0.3,'Necro':0.7, 'Py':0.05},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
     'eup_3':{'Fast':0.6,'Slow':0.4,'Necro':0.6, 'Py':0.1},
     'eup_4':{'Fast':0.7,'Slow':0.3,'Necro':0.7, 'Py':0.05},
@@ -51,6 +51,14 @@ envir_vals={'thetamin': array(0.5),
               'thetamax': array(0.7),
               'porosity': array(0.4)}
 
+from numpy import where
+num_micro_pools=0
+num_micro_pools=where(SOM_init['MBC_1']>0, num_micro_pools+1, num_micro_pools+0)   
+num_micro_pools=where(SOM_init['MBC_2']>0, num_micro_pools+1, num_micro_pools+0)   
+num_micro_pools=where(SOM_init['MBC_3']>0, num_micro_pools+1, num_micro_pools+0)   
+num_micro_pools=where(SOM_init['MBC_4']>0, num_micro_pools+1, num_micro_pools+0)   
+
+### Should also include a function that makes sure that each simulation is using the same number of microbial pools!
 
 import Microbial_CORPSE_array
 Microbial_CORPSE_array.check_params(params)

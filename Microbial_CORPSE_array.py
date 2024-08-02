@@ -27,7 +27,7 @@ expected_params={'vmaxref_1': 'Relative maximum enzymatic decomp rates for first
 # Names of the C types. Can edit this to change the number and name of pools in edited model simulations
 chem_types = ['Fast','Slow','Necro', 'Py']
 
-microbial_pools = ['1']
+microbial_pools = ['1','2','3','4'] # set number of microbial pools (up to 4) to use - would be nice to integrate this into Microbial_sims.py
 
 # Makes a list of the pools that should actually be in the model, including both protected and unprotected states
 expected_pools = ['u'+t+'C' for t in chem_types]+\

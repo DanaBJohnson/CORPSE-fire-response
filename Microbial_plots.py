@@ -16,14 +16,17 @@ from matplotlib import pyplot
 # Each set of results should have the same set of pools as the initial values structure from the beginning of the simulation
 import Microbial_sims
 import Microbial_CORPSE_array as Microbial_CORPSE_array
+import numpy as np
 
 
-
-if len(Microbial_CORPSE_array.microbial_pools)>1:
-    nrows = len(Microbial_CORPSE_array.microbial_pools)
+if (Microbial_sims.num_micro_pools)>1:
+    #nrows = len(Microbial_CORPSE_array.microbial_pools)
+    nrows=int(Microbial_sims.num_micro_pools)
+    
     fig,ax=pyplot.subplots(nrows=nrows,ncols=1,clear=True,num='CORPSE results')
     p=0
-    for m in Microbial_CORPSE_array.microbial_pools:
+    for m in np.arange(1,nrows+1,1):
+        m=str(m)
         for sim in Microbial_sims.results:
             totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
             ax[p].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['MBC_'+m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
@@ -34,7 +37,8 @@ if len(Microbial_CORPSE_array.microbial_pools)>1:
     ax[p-1].legend(fontsize='small')
 else:
     fig,ax=pyplot.subplots(nrows=1,ncols=1,clear=True,num='CORPSE results')
-    for m in Microbial_CORPSE_array.microbial_pools:
+    for m in np.arange(1,nrows+1,1):
+        m=str(m)
         for sim in Microbial_sims.results:
             totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
             ax.plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['MBC_'+m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)

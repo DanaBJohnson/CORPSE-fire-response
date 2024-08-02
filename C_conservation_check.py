@@ -1,16 +1,19 @@
 import Microbial_sims
 import Microbial_CORPSE_array as Microbial_CORPSE_array
 from matplotlib import pyplot
+import numpy as np
 
 # Plot total C for each simulation
 fig,ax=pyplot.subplots(nrows=4,ncols=1,clear=True,num='CORPSE results')
 p=0
 
+num_micro_pools=int(Microbial_sims.num_micro_pools)
 for sim in Microbial_sims.results:
     totalC_substrate=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
     C_respired=Microbial_sims.results[sim][0]['CO2']
     totalMBC=0
-    for m in Microbial_CORPSE_array.microbial_pools:
+    for m in np.arange(1,num_micro_pools+1,1):
+        m=str(m) 
         totalMBC=Microbial_sims.results[sim][0]['MBC_'+m]+totalMBC
     
     totalC=totalC_substrate+C_respired+totalMBC
@@ -30,6 +33,9 @@ pyplot.show()
 
 
 
+        
+        
+
 # Plot C in each pool for the no burn sandy soil simulation
 fig,ax=pyplot.subplots(nrows=4,ncols=1,clear=True,num='CORPSE results')
 sim='no burn sandy soil'
@@ -38,7 +44,8 @@ ax[1].plot(Microbial_sims.t*365,Microbial_CORPSE_array.sumCtypes(Microbial_sims.
 
 totalMBC=0
 
-for m in Microbial_CORPSE_array.microbial_pools:
+for m in np.arange(1,num_micro_pools+1,1):
+    m=str(m) 
     totalMBC=Microbial_sims.results[sim][0]['MBC_'+m]+totalMBC
     
 totalC=totalC_substrate+C_respired+totalMBC
@@ -62,12 +69,12 @@ pyplot.show()
 
 
 # Plot C in each microbial pool for the no burn sandy soil simulation
-if len(Microbial_CORPSE_array.microbial_pools)>1:
-    nrows = len(Microbial_CORPSE_array.microbial_pools)
-    fig,ax=pyplot.subplots(nrows=nrows,ncols=1,clear=True,num='CORPSE results')
+if (Microbial_sims.num_micro_pools)>1:
+    fig,ax=pyplot.subplots(nrows=num_micro_pools,ncols=1,clear=True,num='CORPSE results')
     p=0
-    sim='high sev burn sandy soil'
-    for m in Microbial_CORPSE_array.microbial_pools:
+    sim='no burn sandy soil'
+    for m in np.arange(1,num_micro_pools+1,1):
+        m=str(m) 
         ax[p].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['MBC_'+m], color='purple')
         ax[p].set_ylabel('MBC '+m)
         p=p+1
