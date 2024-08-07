@@ -131,27 +131,27 @@ pyplot.show()
 
 
 
-# # Plot C in each pool for the no burn sandy soil simulation
-# fig,ax=pyplot.subplots(nrows=4,ncols=1,clear=True,num='CORPSE results')
-# p=0
+# Plot C in each pool for the no burn sandy soil simulation
+fig,ax=pyplot.subplots(nrows=4,ncols=1,clear=True,num='CORPSE results')
+p=0
 
-# Whitman_sims.results['no burn sandy soil']
-# ax[0].plot(Whitman_sims.t*365,CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'u'), color='maroon')
-# ax[1].plot(Whitman_sims.t*365,CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'p'), color='maroon')
+sim='no burn sandy soil'
+ax[0].plot(Whitman_sims.t*365,CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'u'), color='maroon')
+ax[1].plot(Whitman_sims.t*365,CORPSE_array.sumCtypes(Whitman_sims.results[sim][0], 'p'), color='maroon')
 
-# totalMBC=0
+totalMBC=0
 
-# totalMBC=Whitman_sims.results[sim][0]['livingMicrobeC']+totalMBC
+totalMBC=Whitman_sims.results[sim][0]['livingMicrobeC']+totalMBC
     
-# totalC=totalC_substrate+C_respired+totalMBC
+totalC=totalC_substrate+C_respired+totalMBC
 
-# ax[2].plot(Whitman_sims.t*365,totalMBC, color='maroon')
-# ax[3].plot(Whitman_sims.t*365,Whitman_sims.results[sim][0]['CO2'], color='maroon')
+ax[2].plot(Whitman_sims.t*365,totalMBC, color='maroon')
+ax[3].plot(Whitman_sims.t*365,Whitman_sims.results[sim][0]['CO2'], color='maroon')
 
-# ax[0].set_title('Pool size for no burn sandy soil simulation', y=1, pad=-15)
-# ax[0].set_ylabel('Unprot. C')
-# ax[1].set_ylabel('Prot. C')
-# ax[2].set_ylabel('MBC')
-# ax[3].set_ylabel('CO2-C')
-# ax[3].set_xlabel('Time (days)')
-# pyplot.show()
+ax[0].set_title('Pool size for no burn sandy soil simulation', y=1, pad=-15)
+ax[0].set_ylabel('Unprot. C')
+ax[1].set_ylabel('Prot. C')
+ax[2].set_ylabel('MBC')
+ax[3].set_ylabel('CO2-C')
+ax[3].set_xlabel('Time (days)')
+pyplot.show()

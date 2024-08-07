@@ -6,7 +6,10 @@ expected_params={'vmaxref_1': 'Relative maximum enzymatic decomp rates for first
                  'vmaxref_3': 'Relative maximum enzymatic decomp rates for third microbe pool (length 3)',
                  'vmaxref_4': 'Relative maximum enzymatic decomp rates for fourth microbe pool (length 3)',
         	'Ea':	'Activation energy (length 3)',
-        	'kC':	'Michaelis-Menton parameter (length 3)',
+        	'kC_1':	'Michaelis-Menton parameter (length 3)',
+        	'kC_2':	'Michaelis-Menton parameter (length 3)',
+        	'kC_3':	'Michaelis-Menton parameter (length 3)',
+        	'kC_4':	'Michaelis-Menton parameter (length 3)',
         	'gas_diffusion_exp': 'Determines suppression of decomp at high soil moisture',
             'substrate_diffusion_exp':'Determines suppression of decomp at low soil moisture',
         	'minMicrobeC':	   'Minimum microbe biomass (fraction of total C)',
@@ -59,7 +62,10 @@ def check_params(params):
              vmaxref_3=[2500,600,2000]; Relative maximum enzymatic decomp rates
              vmaxref_4=[2500,600,2000]; Relative maximum enzymatic decomp rates
              Ea=[37e3,54e3,50e3];     Activation energy
-             kC=[0.01,0.01,0.01];     Michaelis-Menton parameter
+             kC_1=[0.01,0.01,0.01];     Michaelis-Menton parameter
+             kC_2=[0.01,0.01,0.01];     Michaelis-Menton parameter
+             kC_3=[0.01,0.01,0.01];     Michaelis-Menton parameter
+             kC_4=[0.01,0.01,0.01];     Michaelis-Menton parameter
              gas_diffusion_exp=2.5;   Determines suppression of decomp at high soil moisture
              minMicrobeC=1e-3;       Minimum microbe biomass (fraction of total C)
              Tmic=0.15;        microbe turnover rate
@@ -227,11 +233,11 @@ def decompRate(SOM,T,theta,params):
     for m in microbial_pools:
         if m=='1':
             vmax_1=Vmax('vmaxref_1',T,params)
-        if m=='2':
+        elif m=='2':
             vmax_2=Vmax('vmaxref_2',T,params)
-        if m=='3':
+        elif m=='3':
             vmax_3=Vmax('vmaxref_3',T,params)
-        if m=='4':
+        elif m=='4':
             vmax_4=Vmax('vmaxref_4',T,params)
             
 
@@ -240,38 +246,50 @@ def decompRate(SOM,T,theta,params):
         if m=='1':
             decompRate_1={}
             decompRate={}
-        if m=='2': 
+        elif m=='2': 
             decompRate_2={}
-        if m=='3':
+        elif m=='3':
             decompRate_3={}
-        if m=='4':
+        elif m=='4':
             decompRate_4={}
             
+        
     # Skip the decomposition calculation if there is no carbon or no microbe biomass (to avoid dividing by zero)
     dodecomp=(sumCtypes(SOM,'u')!=0.0)&(theta!=0.0)&(SOM['MBC_1']!=0.0)
-    ##### Why does theta equal two values?
+
+    decompRate_all={}
     
     for m in microbial_pools:    
         for t in chem_types:
             if dodecomp.any():
                 if m=='1':
-                    drate_1=where(dodecomp,vmax_1[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_1']/(sumCtypes(SOM,'u')*params['kC'][t]+SOM['MBC_1'])*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
-                    decompRate_1[t]=drate_1
-                    decompRate[m]=decompRate_1
-                elif m=='2':
-                    drate_2=where(dodecomp,vmax_2[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_2']/(sumCtypes(SOM,'u')*params['kC'][t]+SOM['MBC_2'])*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
-                    decompRate_2[t]=drate_2
-                    decompRate[m]=decompRate_2
-                elif m=='3':
-                    drate_3=where(dodecomp,vmax_3[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_3']/(sumCtypes(SOM,'u')*params['kC'][t]+SOM['MBC_3'])*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
-                    decompRate_3[t]=drate_3
-                    decompRate[m]=decompRate_3
-                elif m=='4':
-                    drate_4=where(dodecomp,vmax_4[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_4']/(sumCtypes(SOM,'u')*params['kC'][t]+SOM['MBC_4'])*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
-                    decompRate_4[t]=drate_4
-                    decompRate[m]=decompRate_4
+                    # ERROR: I'm calculating decomposition for just one microbial pool
+                    # But the relationship between decomposition and MBC is logarithmic.
+                    # Therefore, when i calculate microbial growth and CO2prod using two decomposition rates...
+                    # too much CO2 is being produced. Instead, I need to calculate a single decomposition rate
+                    # and a single microbial growth rate? But then how to keep track of the microbial pool
+                    # sizes? I'd like to be able to track changes in MBC1 and MBC2 over time. 
 
-    return decompRate
+                    # Calculate decomposition rate of pool t by microbial group m by dividing by total MBC
+                    drate_1=where(dodecomp,vmax_1[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_1']/(sumCtypes(SOM,'u')*params['kC_1'][t]+(SOM['MBC_1']+SOM['MBC_2']+SOM['MBC_3']+SOM['MBC_4']))*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
+                    decompRate_1[t]=drate_1
+                    decompRate_all[m]=decompRate_1
+                elif m=='2':
+                    drate_2=where(dodecomp,vmax_2[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_2']/(sumCtypes(SOM,'u')*params['kC_2'][t]+(SOM['MBC_1']+SOM['MBC_2']+SOM['MBC_3']+SOM['MBC_4']))*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
+                    decompRate_2[t]=drate_2
+                    decompRate_all[m]=decompRate_2
+                elif m=='3':
+                    drate_3=where(dodecomp,vmax_3[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_3']/(sumCtypes(SOM,'u')*params['kC_3'][t]+(SOM['MBC_1']+SOM['MBC_2']+SOM['MBC_3']+SOM['MBC_4']))*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
+                    decompRate_3[t]=drate_3
+                    decompRate_all[m]=decompRate_3
+                elif m=='4':
+                    drate_4=where(dodecomp,vmax_4[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_4']/(sumCtypes(SOM,'u')*params['kC_4'][t]+(SOM['MBC_1']+SOM['MBC_2']+SOM['MBC_3']+SOM['MBC_4']))*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
+                    decompRate_4[t]=drate_4
+                    decompRate_all[m]=decompRate_4
+            else:
+                drate_1=0
+
+    return decompRate_all
 
 
 def Vmax(Micro_pool, T,params):
