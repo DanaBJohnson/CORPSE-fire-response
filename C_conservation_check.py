@@ -70,27 +70,32 @@ pyplot.show()
 
 # Plot C in each microbial pool for the no burn sandy soil simulation
 if (Microbial_sims.num_micro_pools)>1:
-    fig,ax=pyplot.subplots(nrows=num_micro_pools,ncols=1,clear=True,num='CORPSE results')
+    fig,ax=pyplot.subplots(nrows=num_micro_pools+1,ncols=1,clear=True,num='CORPSE results')
     p=0
     sim='no burn sandy soil'
+    total_MBC=0
     for m in np.arange(1,num_micro_pools+1,1):
         m=str(m) 
-        ax[p].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['MBC_'+m], color='purple')
+        ax[p].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['MBC_'+m], color='purple', linewidth=3.0)
         ax[p].set_ylabel('MBC '+m)
+        ax[p].set_ylim(0,7)
+        ax[p].set(xticks=[])
+        total_MBC=total_MBC+Microbial_sims.results[sim][0]['MBC_'+m]
         p=p+1
+    ax[p].plot(Microbial_sims.t*365,total_MBC, color='dimgrey')
+    ax[p].set_ylabel('Total MBC')
+    ax[p].set_ylim(0,7)
     ax[0].set_title('Pool size for '+sim+' simulation', y=1, pad=-15)
-    ax[p-1].set_xlabel('Time (days)')
-    ax[p-1].legend(fontsize='small')
+    ax[p].set_xlabel('Time (days)')
 else:
     fig,ax=pyplot.subplots(nrows=1,ncols=1,clear=True,num='CORPSE results')
     p=0
     sim='high sev burn sandy soil'
-    ax.plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['MBC_1'], color='purple')
+    ax.plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['MBC_1'], color='purple', linewidth=3.0)
     ax.set_ylabel('MBC 1')
     p=p+1 
     ax.set_title('Pool size for '+sim+' simulation', y=1, pad=-15)
     ax.set_xlabel('Time (days)')
-    ax.legend(fontsize='small')
 
 pyplot.show()
 

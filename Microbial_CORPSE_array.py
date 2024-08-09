@@ -30,7 +30,8 @@ expected_params={'vmaxref_1': 'Relative maximum enzymatic decomp rates for first
 # Names of the C types. Can edit this to change the number and name of pools in edited model simulations
 chem_types = ['Fast','Slow','Necro', 'Py']
 
-microbial_pools = ['1','2','3','4'] # set number of microbial pools (up to 4) to use - would be nice to integrate this into Microbial_sims.py
+# set number of microbial pools (up to 4) to use - would be nice to integrate this into Microbial_sims.py
+microbial_pools = ['1','2','3','4'] 
 
 # Makes a list of the pools that should actually be in the model, including both protected and unprotected states
 expected_pools = ['u'+t+'C' for t in chem_types]+\
@@ -39,8 +40,8 @@ expected_pools = ['u'+t+'C' for t in chem_types]+\
                  ['CO2','originalC']
 
 # Function for updating protected C formation rate for different soil textures, based on Mayes et al (2012) paper
-#All soils: slope=0.4833,intercept=2.3282
-#Alfisols: slope=0.5945, intercept=2.2788
+# All soils: slope=0.4833,intercept=2.3282
+# Alfisols: slope=0.5945, intercept=2.2788
 def prot_clay(claypercent,slope=0.4833,intercept=2.3282,BD=1.15,porosity=0.4):
     ''' Calculate protection rate as a function of clay content, based on sorption isotherms from Mayes et al (2012) Table 3
     Calculates Qmax in mgC/kg soil from Mayes et al 2012, converted to g/m3 using bulk density
@@ -102,22 +103,26 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
 
        Returns same data structure as SOM'''
 
+    # convert input into array
     theta=atleast_1d(theta)
     T=atleast_1d(T)
 
+    # Constraint theta to 0 < theta < 1
     theta[theta<0]=0.0
     theta[theta>1]=1.0
 
-    # Calculate maximum potential C decomposition rate
+    # Calculate maximum potential C decomposition rate of each C pool by each microbial group
     decomp=decompRate(SOM,T,theta,params)
 
+    # Create empty variables for dead MBC and microbial turnover rate
     deadmic_C_production=0
     microbeTurnover=0
-    # microbe turnover
+    
+    # Calculate microbial turnover and dead MBC production for each microbial pool 
     for m in microbial_pools:
-        et=params['et_'+m]
+        et=params['et_'+m] # Re-assign et (Fraction of microbial biomass turnover that becomes necromass) for each microbial pool
         if m=='1':
-            # Only calculate turnover if MBC pool is greater than 0
+            # If MBC pool > 0, calculate microbial turnover. If not, set turnover equal to 0. 
             microbeTurnover_1=where((SOM['MBC_1']>0), (SOM['MBC_1']-params['minMicrobeC']*(sumCtypes(SOM,'u')))/params['Tmic'],0);   # kg/m2/yr
             # Calculate cumulative microbial turnover
             microbeTurnover=microbeTurnover+microbeTurnover_1
@@ -136,16 +141,14 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
             microbeTurnover=microbeTurnover+microbeTurnover_4
             deadmic_C_production=deadmic_C_production+microbeTurnover_4*et
 
-
+    # Ensure that microbial turnover is > 0
     if isinstance(microbeTurnover,float):
         microbeTurnover=max(0.0,microbeTurnover)
     else:
         microbeTurnover[microbeTurnover<0.0]=0.0
 
-    # Calculate fraction of microbial turnover for each microbial pool conerted to CO2 (maintenance respiration)
-    # Calculate cumulative maintenance respiration
-    # Calculate cumulatve CO2 produced (maintenance respiration + decomposition of each C pool)
-    # Calculate microbial growth for each microbial pool
+    
+    # Create empty variables for microbial growth, CO2 production, and maintenance respiration
     microbeGrowth_1=0
     microbeGrowth_2=0
     microbeGrowth_3=0
@@ -153,14 +156,19 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
     CO2prod=0
     maintenanceResp=0
     for m in microbial_pools:
-        eup=params['eup_'+m]
-        et=params['et_'+m]
+        eup=params['eup_'+m]  # Re-assign eup (CUE) for each microbial pool
+        et=params['et_'+m] # Re-assign et for each microbial pool
         if m=='1':
+            # Calculate fraction of microbial turnover for each microbial pool conerted to CO2 (maintenance respiration)
             maintenanceResp_1=microbeTurnover_1*(1.0-et)
+            # Calculate cumulative maintenance respiration
             maintenanceResp=maintenanceResp+maintenanceResp_1
-            CO2prod=CO2prod+maintenanceResp_1     # CO2 production and cumulative CO2 produced by cohort
+            # CO2 production and cumulative CO2 produced by cohort
+            CO2prod=CO2prod+maintenanceResp_1     
             for t in chem_types:
+                # Calculate cumulatve CO2 produced (maintenance respiration + decomposition of each C pool)
                 CO2prod=CO2prod+decomp[m][t]*(1.0-eup[t])
+                # Calculate microbial growth for each microbial pool
                 microbeGrowth_1=microbeGrowth_1+decomp[m][t]*eup[t]
         elif m=='2':
             maintenanceResp_2=microbeTurnover_2*(1.0-et)
@@ -185,17 +193,18 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
                 microbeGrowth_4=microbeGrowth_4+decomp[m][t]*eup[t]
             
 
-
     # Update protected carbon
     protectedCturnover = dict([(t,SOM['p'+t+'C']/params['tProtected']) for t in chem_types])
     protectedCprod =     dict([(t,SOM['u'+t+'C']*params['protection_rate'][t]*claymod) for t in chem_types])
         # Some slow, protected C is being formed, but none of the pools are undergoing turnover > 0. Where is the protected C coming from??
         
-
-    derivs=SOM.copy()
-    for k in derivs.keys():
-        derivs[k]=0.0
         
+    #### Assign new values to SOM pools (based on calculated rates of change)
+    derivs=SOM.copy() # Create a copy of the original SOM dictionary
+    for k in derivs.keys():
+        derivs[k]=0.0 # Set all the C pools to 0
+        
+    # Fill in dictionary with new MBC pool size based on microbial growth and turnover 
     for m in microbial_pools:
         if m=='1': derivs['MBC_1']=microbeGrowth_1-microbeTurnover_1; #derivs['CO2']=CO2prod_1
         elif m=='2': derivs['MBC_2']=microbeGrowth_2-microbeTurnover_2; #derivs['CO2']=derivs['CO2']+CO2prod_2
@@ -203,15 +212,18 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
         elif m=='4': derivs['MBC_4']=microbeGrowth_4-microbeTurnover_4; #derivs['CO2']=derivs['CO2']+CO2prod_4
     derivs['CO2']=CO2prod
 
-    total_decomp={}  
+    total_decomp={}   # create empty dictionary 
     for t in chem_types:
-        total_decomp['u'+t+'C']=0
+        total_decomp['u'+t+'C']=0 # Assign an initial value of 0 to for decomposition rate of C pool
         total_decomp['p'+t+'C']=0
         for m in microbial_pools:
+            # Calculate cumulative decomposition of each pool by each microbial group
             total_decomp['u'+t+'C']=total_decomp['u'+t+'C']+decomp[m][t]
+        # Fill in derivs dictionary with new C pool (Fast, Slow, Necro, Py) size based on decomposition rate, protected C formation, and protected C turnover
         derivs['u'+t+'C']=-total_decomp['u'+t+'C']+protectedCturnover[t]-protectedCprod[t]
         derivs['p'+t+'C']=-total_decomp['p'+t+'C']+protectedCprod[t]-protectedCturnover[t]
 
+    # Add new dead MBC to the necromass pool 
     derivs['uNecroC']=derivs['uNecroC']+deadmic_C_production
     return derivs
 
@@ -245,7 +257,6 @@ def decompRate(SOM,T,theta,params):
     for m in microbial_pools:
         if m=='1':
             decompRate_1={}
-            decompRate={}
         elif m=='2': 
             decompRate_2={}
         elif m=='3':
@@ -257,22 +268,18 @@ def decompRate(SOM,T,theta,params):
     # Skip the decomposition calculation if there is no carbon or no microbe biomass (to avoid dividing by zero)
     dodecomp=(sumCtypes(SOM,'u')!=0.0)&(theta!=0.0)&(SOM['MBC_1']!=0.0)
 
+    # Create empty dictionary to store decomposition rates
     decompRate_all={}
     
     for m in microbial_pools:    
         for t in chem_types:
-            if dodecomp.any():
+            if dodecomp.any(): # Skip decomp calculations if C pools or MBC == 0
                 if m=='1':
-                    # ERROR: I'm calculating decomposition for just one microbial pool
-                    # But the relationship between decomposition and MBC is logarithmic.
-                    # Therefore, when i calculate microbial growth and CO2prod using two decomposition rates...
-                    # too much CO2 is being produced. Instead, I need to calculate a single decomposition rate
-                    # and a single microbial growth rate? But then how to keep track of the microbial pool
-                    # sizes? I'd like to be able to track changes in MBC1 and MBC2 over time. 
-
                     # Calculate decomposition rate of pool t by microbial group m by dividing by total MBC
                     drate_1=where(dodecomp,vmax_1[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_1']/(sumCtypes(SOM,'u')*params['kC_1'][t]+(SOM['MBC_1']+SOM['MBC_2']+SOM['MBC_3']+SOM['MBC_4']))*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
+                    # Build dictionary of decomposition rates of each C pool for given MBC group
                     decompRate_1[t]=drate_1
+                    # Assign this dictionary to the decompRate_all dictionary
                     decompRate_all[m]=decompRate_1
                 elif m=='2':
                     drate_2=where(dodecomp,vmax_2[t]*theta**params['substrate_diffusion_exp']*(SOM['u'+t+'C'])*SOM['MBC_2']/(sumCtypes(SOM,'u')*params['kC_2'][t]+(SOM['MBC_1']+SOM['MBC_2']+SOM['MBC_3']+SOM['MBC_4']))*(1.0-theta)**params['gas_diffusion_exp']/aerobic_max,0.0)
@@ -289,7 +296,7 @@ def decompRate(SOM,T,theta,params):
             else:
                 drate_1=0
 
-    return decompRate_all
+    return decompRate_all # output is the decomposition rates of each C pool by given MBC group
 
 
 def Vmax(Micro_pool, T,params):
@@ -301,6 +308,7 @@ def Vmax(Micro_pool, T,params):
 
     from numpy import exp
 
+    # Calculate temperature adjusted vmax for each chem type
     Vmax=dict([(t,params[Micro_pool][t]*exp(-params['Ea'][t]*(1.0/(Rugas*T)-1.0/(Rugas*Tref)))) for t in chem_types]);
 
     return Vmax

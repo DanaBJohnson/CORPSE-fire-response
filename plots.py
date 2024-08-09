@@ -148,7 +148,7 @@ ax[1].scatter(x_120burn_Picea, y_120burn_Picea, s=2, color = 'orange', label = "
 # Format axes and legend
 ax[0].set_xlabel('Time (days)')
 ax[0].set_ylabel('Cumulative C-CO$_2$ respired\n(% of initial C)')
-ax[0].set_title('Sandy soil', y=1, pad=-15)
+ax[0].set_title('One pool model: Sandy soil', y=1, pad=-15)
 # ax[0].set_xlim([0,35])
 #ax[0].legend(loc = 'upper left', prop={'size':8})
 ax[1].set_xlabel('Time (days)')
