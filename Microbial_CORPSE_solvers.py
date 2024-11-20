@@ -175,6 +175,6 @@ def run_models_ODE(Tmin,Tmax,thetamin,thetamax,times,inputs,params,clay,initvals
 def totalCarbon(SOM, microbial_pools):
     totalMBC=0
     for m in microbial_pools:
-        totalMBC=totalMBC+SOM['MBC_'+m]
+        totalMBC=totalMBC+SOM[m]
     return SOM['uFastC']+SOM['uSlowC']+SOM['uNecroC']+SOM['uPyC']+SOM['pFastC']+SOM['pSlowC']+SOM['pNecroC']+SOM['pPyC']+totalMBC
     

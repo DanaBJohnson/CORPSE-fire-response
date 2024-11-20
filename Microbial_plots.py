@@ -14,10 +14,12 @@ from matplotlib import pyplot
 
 # This section plots the results
 # Each set of results should have the same set of pools as the initial values structure from the beginning of the simulation
-import Microbial_sims
-import Microbial_CORPSE_array as Microbial_CORPSE_array
-import numpy as np
 
+### Indicate which simulation to import: either Microbial_sims (multi-MBC pool simulation) Microbial_sims_single_MBC_pool (single-MBC pool simulation)
+# import Microbial_sims as Microbial_sims
+import Microbial_sims_single_MBC_pool as Microbial_sims
+
+import Microbial_CORPSE_array as Microbial_CORPSE_array
 
 nrows=int(Microbial_sims.num_micro_pools)
 
@@ -25,32 +27,30 @@ if (Microbial_sims.num_micro_pools)>1:
     #nrows = len(Microbial_CORPSE_array.microbial_pools)
     fig,ax=pyplot.subplots(nrows=nrows,ncols=1,clear=True,num='CORPSE results')
     p=0
-    for m in np.arange(1,nrows+1,1):
-        m=str(m)
+    for m in Microbial_CORPSE_array.microbial_pools[0:nrows]:
         for sim in Microbial_sims.results:
             totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-            ax[p].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['MBC_'+m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
-            ax[p].set_title('Microbial pool '+m, y=1, pad=-15)
+            ax[p].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0][m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
+        ax[p].set_title(m, y=1, pad=-15)
         p=p+1
     ax[0].set_ylabel('Microbial pool biomass \n(% initial C)')
     ax[p-1].set_xlabel('Time (days)')
     ax[p-1].legend(fontsize='small')
 else:
     fig,ax=pyplot.subplots(nrows=1,ncols=1,clear=True,num='CORPSE results')
-    for m in np.arange(1,nrows+1,1):
-        m=str(m)
-        for sim in Microbial_sims.results:
-            totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-            ax.plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['MBC_'+m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
-            ax.set_title('Microbial pool '+m, y=1, pad=-15)
+    m='MBC_1'
+    for sim in Microbial_sims.results:
+        totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+        ax.plot(Microbial_sims.t*365,Microbial_sims.results[sim][0][m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
+        ax.set_title(m, y=1, pad=-15)
     ax.set_ylabel('Microbial pool biomass \n(% initial C)')
     ax.set_xlabel('Time (days)')
     ax.legend(fontsize='small')
 
 pyplot.subplots_adjust(hspace = 0.2)
 
-pyplot.show()
-
+pyplot.show(block=False)
+#pyplot.draw()
 
 
 
@@ -85,8 +85,8 @@ ax[1,1].set_title('uSlowC', y=1, pad=-10)
 
 pyplot.subplots_adjust(hspace = 0.2)
 
-pyplot.show()
-
+pyplot.show(block=False)
+#pyplot.draw()
 
 
 
@@ -143,6 +143,10 @@ ax[1].legend(loc = 'upper left', prop={'size':8})
 pyplot.show() # Display plot
    
     
+   
+    
+
+
 # Check model output by summing totalC and CO2
 #fig,ax=pyplot.subplots(nrows=1)
 

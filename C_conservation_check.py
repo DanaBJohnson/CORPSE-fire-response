@@ -12,9 +12,8 @@ for sim in Microbial_sims.results:
     totalC_substrate=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
     C_respired=Microbial_sims.results[sim][0]['CO2']
     totalMBC=0
-    for m in np.arange(1,num_micro_pools+1,1):
-        m=str(m) 
-        totalMBC=Microbial_sims.results[sim][0]['MBC_'+m]+totalMBC
+    for m in Microbial_CORPSE_array.microbial_pools[0:num_micro_pools]:
+        totalMBC=Microbial_sims.results[sim][0][m]+totalMBC
     
     totalC=totalC_substrate+C_respired+totalMBC
     
@@ -44,9 +43,8 @@ ax[1].plot(Microbial_sims.t*365,Microbial_CORPSE_array.sumCtypes(Microbial_sims.
 
 totalMBC=0
 
-for m in np.arange(1,num_micro_pools+1,1):
-    m=str(m) 
-    totalMBC=Microbial_sims.results[sim][0]['MBC_'+m]+totalMBC
+for m in Microbial_CORPSE_array.microbial_pools[0:num_micro_pools]:
+    totalMBC=Microbial_sims.results[sim][0][m]+totalMBC
     
 totalC=totalC_substrate+C_respired+totalMBC
 
@@ -74,13 +72,12 @@ if (Microbial_sims.num_micro_pools)>1:
     p=0
     sim='no burn sandy soil'
     total_MBC=0
-    for m in np.arange(1,num_micro_pools+1,1):
-        m=str(m) 
-        ax[p].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['MBC_'+m], color='purple', linewidth=3.0)
-        ax[p].set_ylabel('MBC '+m)
+    for m in Microbial_CORPSE_array.microbial_pools[0:num_micro_pools]:
+        ax[p].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0][m], color='purple', linewidth=3.0)
+        ax[p].set_ylabel(m)
         ax[p].set_ylim(0,7)
         ax[p].set(xticks=[])
-        total_MBC=total_MBC+Microbial_sims.results[sim][0]['MBC_'+m]
+        total_MBC=total_MBC+Microbial_sims.results[sim][0][m]
         p=p+1
     ax[p].plot(Microbial_sims.t*365,total_MBC, color='dimgrey')
     ax[p].set_ylabel('Total MBC')
