@@ -3,18 +3,18 @@ from numpy import array,arange
 import copy
 
 # This makes an array of all the model time steps (in units of years). In this case, it starts at zero, ends at 120 days, and has a time step of one day
-t=arange(0,365/365,1/365)
+t=arange(0,70/365,1/365)
 
-# Parameters controlling the model (sandy soil, no burn)
+# Parameters controlling the model (Gleysol, no burn)
 params={
     #'vmaxref':{'Fast':8.0,'Slow':0.2,'Necro':4.0, 'Py':0.1}, #  Relative maximum enzymatic decomp rates for each C type (year-1)
     'vmaxref':{'MBC_1':{'Fast':5.0,'Slow':0.1,'Necro':5.0, 'Py':0.1},
-               'MBC_2':{'Fast':25.0,'Slow':0.01,'Necro':75.0, 'Py':0.01},
+               'MBC_2':{'Fast':20.0,'Slow':0.01,'Necro':65.0, 'Py':0.01},
                'MBC_3':{'Fast':0.0,'Slow':0.0,'Necro':0.0, 'Py':0.0}, 
                'MBC_4':{'Fast':0.0,'Slow':0.0,'Necro':0.0, 'Py':0.0}},
     'Ea':{'Fast':5e3,'Slow':30e3,'Necro':5e3, 'Py':35e3},      # Activation energy (controls T dependence)
     'kC':{'MBC_1':{'Fast':0.01,'Slow':0.01,'Necro':0.01, 'Py':0.01},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
-          'MBC_2':{'Fast':0.02,'Slow':0.1,'Necro':0.02, 'Py':0.1},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
+          'MBC_2':{'Fast':0.01,'Slow':0.01,'Necro':0.01, 'Py':0.01},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
           'MBC_3':{'Fast':0.1,'Slow':0.01,'Necro':0.1, 'Py':0.01},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
           'MBC_4':{'Fast':0.1,'Slow':0.01,'Necro':0.1, 'Py':0.01}},    # Michaelis-Menton half saturation parameter (g microbial biomass/g substrate)
     # Smaller kC results in more CO2 produced for a given amount of C available to decompose?
@@ -23,12 +23,12 @@ params={
     'gas_diffusion_exp':0.6,  # Determines suppression of decomposition at high soil moisture
     'substrate_diffusion_exp':1.5,   # Controls suppression of decomp at low soil moisture
     'minMicrobeC':{'MBC_1':1e-3,'MBC_2':1e-5,'MBC_3':1e-3,'MBC_4':1e-3}, # Minimum microbial biomass (fraction of total C). Prevents microbes from going extinct and allows some slow decomposition under adverse conditions
-    'Tmic':{'MBC_1':0.5,'MBC_2':0.06,'MBC_3':0.25,'MBC_4':0.25}, # Microbial biomass mean lifetime (years)
+    'Tmic':{'MBC_1':0.5,'MBC_2':0.15,'MBC_3':0.25,'MBC_4':0.25}, # Microbial biomass mean lifetime (years)
             # Give MBC 1 a mean lifetime of 6 hours (0.25) and MBC_2 a mean lifetime of 60 minutes.
     'et':{'MBC_1':0.8,'MBC_2':0.8,'MBC_3':0.6,'MBC_4':0.6},                  # Fraction of microbial biomass turnover (death) that goes to necromass instead of being immediately mineralized to CO2
     # Wouldn't we expect all the MBC to become necromass and then decomposition of necromass --> CO2??
     'eup':{'MBC_1':{'Fast':0.55,'Slow':0.4,'Necro':0.55, 'Py':0.1},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
-           'MBC_2':{'Fast':0.4,'Slow':0.4,'Necro':0.4, 'Py':0.1},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
+           'MBC_2':{'Fast':0.4,'Slow':0.3,'Necro':0.4, 'Py':0.1},     # Microbial carbon use efficiency for each substrate type (fast, slow, necromass). This amount is converted to biomass during decomposition, and the remainder is immediately respired as CO2
            'MBC_3':{'Fast':0.5,'Slow':0.3,'Necro':0.6, 'Py':0.1},
            'MBC_4':{'Fast':0.5,'Slow':0.3,'Necro':0.6, 'Py':0.1}},
     'tProtected':75.0,        # Protected C turnover time (years). This is the time scale for which protected C is released back to unprotected state.
@@ -51,7 +51,7 @@ paramsets={}
 envir_params={}
 
  
-# Relative amount of total C in Sandy vs. Org soils
+# Relative amount of total C in Sandy vs. Histosols
 #    Sandy = 5 g - based on total C (g) estimates from 2022 work
 #    Org = 15 g 
 
@@ -88,61 +88,61 @@ SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
  'uPyC': array(totalC_sandy_unburned*0.05)}            # Unprotected PyC
 
 # Microbial community, no burn
-initvals['no burn sandy soil']=copy.deepcopy(SOM_init)      # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-paramsets['no burn sandy soil']=copy.deepcopy(params)
-envir_params['no burn sandy soil']=copy.deepcopy(envir_vals)
+initvals['no burn Gleysol']=copy.deepcopy(SOM_init)      # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
+paramsets['no burn Gleysol']=copy.deepcopy(params)
+envir_params['no burn Gleysol']=copy.deepcopy(envir_vals)
 
-# Sandy soil, high severity burn
-initvals['high sev burn sandy soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['high sev burn sandy soil']['MBC_1']=array(totalC_sandy_burned*0.01) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
-initvals['high sev burn sandy soil']['MBC_2']=array(totalC_sandy_burned*0.001)
-initvals['high sev burn sandy soil']['MBC_3']=array(0.0)
-initvals['high sev burn sandy soil']['MBC_4']=array(0.0)
-initvals['high sev burn sandy soil']['uFastC']=array(totalC_sandy_burned*0.045) 
-initvals['high sev burn sandy soil']['uNecroC']=array(totalC_sandy_burned*0.0031) 
-initvals['high sev burn sandy soil']['uSlowC']=array(totalC_sandy_burned*0.86) # Changed value from 80 to 100 based on calibration results
-initvals['high sev burn sandy soil']['uPyC']=array(totalC_sandy_burned*0.1)
-paramsets['high sev burn sandy soil']=copy.deepcopy(params)
+# Gleysol, high severity burn
+initvals['high sev burn Gleysol']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
+initvals['high sev burn Gleysol']['MBC_1']=array(totalC_sandy_burned*0.01) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['high sev burn Gleysol']['MBC_2']=array(totalC_sandy_burned*0.001)
+initvals['high sev burn Gleysol']['MBC_3']=array(0.0)
+initvals['high sev burn Gleysol']['MBC_4']=array(0.0)
+initvals['high sev burn Gleysol']['uFastC']=array(totalC_sandy_burned*0.045) 
+initvals['high sev burn Gleysol']['uNecroC']=array(totalC_sandy_burned*0.0031) 
+initvals['high sev burn Gleysol']['uSlowC']=array(totalC_sandy_burned*0.86) # Changed value from 80 to 100 based on calibration results
+initvals['high sev burn Gleysol']['uPyC']=array(totalC_sandy_burned*0.1)
+paramsets['high sev burn Gleysol']=copy.deepcopy(params)
 
-envir_params['high sev burn sandy soil']=copy.deepcopy(envir_vals)
-envir_params['high sev burn sandy soil']['thetamin']=array(0.5)
-envir_params['high sev burn sandy soil']['thetamax']=array(0.7)
-envir_params['high sev burn sandy soil']['porosity']=array(0.4)
-
-
-# Org. soil, no burn
-initvals['no burn org soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['no burn org soil']['MBC_1']=array(totalC_org_unburned*0.050) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
-initvals['no burn org soil']['MBC_2']=array(totalC_org_unburned*0.00017)
-initvals['no burn org soil']['MBC_3']=array(0.0)
-initvals['no burn org soil']['MBC_4']=array(0.0)
-initvals['no burn org soil']['uFastC']=array(totalC_org_unburned*0.10) 
-initvals['no burn org soil']['uNecroC']=array(totalC_org_unburned*0.001) 
-initvals['no burn org soil']['uSlowC']=array(totalC_org_unburned*0.80) # Changed value from 86.0 to 60 based on calibration results
-initvals['no burn org soil']['uPyC']=array(totalC_org_unburned*0.05)
-paramsets['no burn org soil']=copy.deepcopy(params)
-envir_params['no burn org soil']=copy.deepcopy(envir_params)
-envir_params['no burn org soil']['thetamin']=array(0.5)
-envir_params['no burn org soil']['thetamax']=array(0.7)
-envir_params['no burn org soil']['porosity']=array(0.9)
+envir_params['high sev burn Gleysol']=copy.deepcopy(envir_vals)
+envir_params['high sev burn Gleysol']['thetamin']=array(0.5)
+envir_params['high sev burn Gleysol']['thetamax']=array(0.7)
+envir_params['high sev burn Gleysol']['porosity']=array(0.4)
 
 
+# Histosol, no burn
+initvals['no burn Histosol']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
+initvals['no burn Histosol']['MBC_1']=array(totalC_org_unburned*0.050) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['no burn Histosol']['MBC_2']=array(totalC_org_unburned*0.00017)
+initvals['no burn Histosol']['MBC_3']=array(0.0)
+initvals['no burn Histosol']['MBC_4']=array(0.0)
+initvals['no burn Histosol']['uFastC']=array(totalC_org_unburned*0.10) 
+initvals['no burn Histosol']['uNecroC']=array(totalC_org_unburned*0.001) 
+initvals['no burn Histosol']['uSlowC']=array(totalC_org_unburned*0.80) # Changed value from 86.0 to 60 based on calibration results
+initvals['no burn Histosol']['uPyC']=array(totalC_org_unburned*0.05)
+paramsets['no burn Histosol']=copy.deepcopy(params)
+envir_params['no burn Histosol']=copy.deepcopy(envir_params)
+envir_params['no burn Histosol']['thetamin']=array(0.5)
+envir_params['no burn Histosol']['thetamax']=array(0.7)
+envir_params['no burn Histosol']['porosity']=array(0.9)
 
-# Org soil, high severity burn
-initvals['high sev burn org soil']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['high sev burn org soil']['MBC_1']=array(totalC_org_burned*0.01) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
-initvals['high sev burn org soil']['MBC_2']=array(totalC_org_burned*0.001)
-initvals['high sev burn org soil']['MBC_3']=array(0.0)
-initvals['high sev burn org soil']['MBC_4']=array(0.0)
-initvals['high sev burn org soil']['uFastC']=array(totalC_org_burned*0.05) 
-initvals['high sev burn org soil']['uNecroC']=array(totalC_org_burned*0.002) 
-initvals['high sev burn org soil']['uSlowC']=array(totalC_org_burned*0.84) # C
-initvals['high sev burn org soil']['uPyC']=array(totalC_org_burned*0.1)
-paramsets['high sev burn org soil']=copy.deepcopy(params)
-envir_params['high sev burn org soil']=copy.deepcopy(envir_params)
-envir_params['high sev burn org soil']['thetamin']=array(0.5)
-envir_params['high sev burn org soil']['thetamax']=array(0.7)
-envir_params['high sev burn org soil']['porosity']=array(0.4)
+
+
+# Histosol, high severity burn
+initvals['high sev burn Histosol']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
+initvals['high sev burn Histosol']['MBC_1']=array(totalC_org_burned*0.01) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['high sev burn Histosol']['MBC_2']=array(totalC_org_burned*0.001)
+initvals['high sev burn Histosol']['MBC_3']=array(0.0)
+initvals['high sev burn Histosol']['MBC_4']=array(0.0)
+initvals['high sev burn Histosol']['uFastC']=array(totalC_org_burned*0.05) 
+initvals['high sev burn Histosol']['uNecroC']=array(totalC_org_burned*0.002) 
+initvals['high sev burn Histosol']['uSlowC']=array(totalC_org_burned*0.84) # C
+initvals['high sev burn Histosol']['uPyC']=array(totalC_org_burned*0.1)
+paramsets['high sev burn Histosol']=copy.deepcopy(params)
+envir_params['high sev burn Histosol']=copy.deepcopy(envir_params)
+envir_params['high sev burn Histosol']['thetamin']=array(0.5)
+envir_params['high sev burn Histosol']['thetamax']=array(0.7)
+envir_params['high sev burn Histosol']['porosity']=array(0.4)
 
 
 from numpy import where
