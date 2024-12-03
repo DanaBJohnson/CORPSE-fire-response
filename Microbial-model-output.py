@@ -8,19 +8,18 @@ Created on Thu Jun 27 14:36:32 2024
 
 import pandas as pd
 from numpy import arange
-import Microbial_sims_single_MBC_pool as Microbial_sims
-# import Microbial_sims as Microbial_sims
-
+# import Microbial_sims_single_MBC_pool as Microbial_sims
+import Microbial_sims as Microbial_sims
 
 # If using Microbial_sims
-# pools="two"
+pools="two"
 # If using Microbial_sims_single_MBC_pool
-pools="one"
+# pools="one"
 
 import Microbial_CORPSE_solvers
 import Microbial_CORPSE_array
 
-t=arange(0,365/365,1/365) # t should be the length of the incubations that we are comparing to.
+t=arange(0,720/365,1/365) # t should be the length of the incubations that we are comparing to.
             
 initvals_SA={}
 

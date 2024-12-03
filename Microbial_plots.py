@@ -15,9 +15,9 @@ from matplotlib import pyplot
 # This section plots the results
 # Each set of results should have the same set of pools as the initial values structure from the beginning of the simulation
 
-### Indicate which simulation to import: either Microbial_sims (multi-MBC pool simulation) Microbial_sims_single_MBC_pool (single-MBC pool simulation)
-# import Microbial_sims as Microbial_sims
-import Microbial_sims_single_MBC_pool as Microbial_sims
+### Indicate which simulation to import: either Microbial_sims (multi-MBC pool simulation) or Microbial_sims_single_MBC_pool (single-MBC pool simulation)
+import Microbial_sims as Microbial_sims
+# import Microbial_sims_single_MBC_pool as Microbial_sims
 
 import Microbial_CORPSE_array as Microbial_CORPSE_array
 
@@ -94,7 +94,7 @@ pyplot.show(block=False)
 fig,ax=pyplot.subplots(nrows=2,ncols=1,clear=True)
 for sim in Microbial_sims.results:
     totalC=Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+Microbial_CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-    if (sim=='no burn sandy soil' or sim=='high sev burn sandy soil'): 
+    if (sim=='no burn Gleysol' or sim=='high sev burn Gleysol'): 
         ax[0].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['CO2']/totalC[0]*100, label = 'Model results: '+sim, linewidth=3.0) # Cumulative % of initial C respired
     else:
         ax[1].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0]['CO2']/totalC[0]*100, label = 'Model results: '+sim, linewidth=3.0) # Cumulative % of initial C respired
@@ -130,12 +130,12 @@ ax[1].scatter(x_120burn_Picea, y_120burn_Picea, s=2, color = 'orange', label = "
 # Format axes and legend
 ax[0].set_xlabel('Time (days)')
 ax[0].set_ylabel('Cumulative C-CO$_2$ respired\n(% of initial C)')
-ax[0].set_title('Multi-pool model: Sandy soil', y=1, pad=-15)
+ax[0].set_title('Multi-pool model: Gleysol soil', y=1, pad=-15)
 # ax[0].set_xlim([0,35])
 #ax[0].legend(loc = 'upper left', prop={'size':8})
 ax[1].set_xlabel('Time (days)')
 ax[1].set_ylabel('Cumulative C-CO$_2$ respired\n(% of initial C)')
-ax[1].set_title('Organic soil', y=1, pad=-15)
+ax[1].set_title('Histosol soil', y=1, pad=-15)
 ax[1].legend(loc = 'upper left', prop={'size':8})
 # ax[1].set_xlim([0,35])
 

@@ -1,4 +1,4 @@
-import Microbial_sims
+import Microbial_sims_single_MBC_pool as Microbial_sims
 import Microbial_CORPSE_array as Microbial_CORPSE_array
 from matplotlib import pyplot
 import numpy as np

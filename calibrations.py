@@ -23,18 +23,18 @@ Created on Fri May 10 13:53:28 2024
         # vmaxref_Slow
         # eup_fast
 
-
-
 import pandas as pd
 from numpy import arange
-import Whitman_sims
+import Microbial_sims
 import copy
-import CORPSE_solvers
+import Microbial_CORPSE_solvers
+import Microbial_CORPSE_array
 
 # Setting up sensitivity analyses: 
 df = pd.DataFrame({'time':['time'],'simulation':['simul'],
                     'calibration_test':['name'],
                     'cumulative_C_CO2': ['CO2'],
+                    'total_initial_C':[0],
                     # 'uFastC': ['uFastC'],
                     # 'uSlowC': ['uSlowC'],
                     # 'uNecroC': ['uNecroC'],
@@ -58,7 +58,10 @@ import time
 timestr = time.strftime('%Y%m%d')
 
 # Effect of varying CUE?
-for simul in list(Whitman_sims.initvals.keys()):
+for simul in list(Microbial_sims.initvals.keys()):
+    
+    totalC=Microbial_CORPSE_solvers.totalCarbon(Microbial_sims.results[simul][0], Microbial_CORPSE_array.microbial_pools)
+    total_initial_C = totalC[0]
     
     # Combinations to test:
     # combos = {"pool": ['uFastC', 'uFastC', 'uSlowC','uSlowC', 'uPyC', 'uPyC'],
@@ -82,8 +85,8 @@ for simul in list(Whitman_sims.initvals.keys()):
     # for i in list(range(0,len(combos['pool']))):
     #     name1=combos['pool'][i]
     #     name2=(combos['pool'][i] + '' + combos['parameter'][i])
-    #     initvals_SA[simul]=copy.deepcopy(Whitman_sims.initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-    #     paramsets_SA[simul]=copy.deepcopy(Whitman_sims.paramsets[simul])
+    #     initvals_SA[simul]=copy.deepcopy(Microbial_sims.initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
+    #     paramsets_SA[simul]=copy.deepcopy(Microbial_sims.paramsets[simul])
     #     variable1=initvals_SA[simul][name1]
     #     variable2=paramsets_SA[simul][combos['parameter'][i]][combos['parameter_pool'][i]]
 
@@ -98,16 +101,16 @@ for simul in list(Whitman_sims.initvals.keys()):
     name6='eup'
     pool6='Fast'
     
-    initvals_SA[simul]=copy.deepcopy(Whitman_sims.initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-    paramsets_SA[simul]=copy.deepcopy(Whitman_sims.paramsets[simul])
+    initvals_SA[simul]=copy.deepcopy(Microbial_sims.initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
+    paramsets_SA[simul]=copy.deepcopy(Microbial_sims.paramsets[simul])
     variable1=initvals_SA[simul][name1]
     variable2=initvals_SA[simul][name2]
     variable3=initvals_SA[simul][name3]
     
     # add eup_Fast, Vmax_F, and Vmax_S
-    parameter1=paramsets_SA[simul][name4][pool4]
-    parameter2=paramsets_SA[simul][name5][pool5]
-    parameter3=paramsets_SA[simul][name6][pool6]
+    parameter1=paramsets_SA[simul][name4]['MBC_1'][pool4]
+    parameter2=paramsets_SA[simul][name5]['MBC_1'][pool5]
+    parameter3=paramsets_SA[simul][name6]['MBC_1'][pool6]
     
     # for v1 in [variable1*0.8,variable1*0.9, variable1*1.0, variable1*1.1,variable1*1.2]:
         # for v2 in [variable2*0.8,variable2*0.9, variable2*1.0, variable2*1.1, variable2*1.2]:
@@ -122,17 +125,17 @@ for simul in list(Whitman_sims.initvals.keys()):
                             # initvals_SA[simul][name1]=v1
                             # initvals_SA[simul][name2]=v2
                             # initvals_SA[simul][name3]=v3
-                            name=f'calibration_{simul}_{name4}{pool4}_{p1:1.4f}_{name5}{pool5}_{p2:1.4f}_{name6}{pool6}_{p3:1.4f}'
-                            paramsets_SA[simul][name4][pool4]=p1
-                            paramsets_SA[simul][name5][pool5]=p2
-                            paramsets_SA[simul][name6][pool6]=p3
+                            name=f'calibration_MBC1_{simul}_{name4}{pool4}_{p1:1.4f}_{name5}{pool5}_{p2:1.4f}_{name6}{pool6}_{p3:1.4f}'
+                            paramsets_SA[simul][name4]['MBC_1'][pool4]=p1
+                            paramsets_SA[simul][name5]['MBC_1'][pool5]=p2
+                            paramsets_SA[simul][name6]['MBC_1'][pool6]=p3
                             
                             results={}
                             # Goes through each functional type and runs a simulation using the appropriate set of parameters and initial values
                             # Simulations are assuming a constant temperature of 20 C and constant moisture of 60% of saturation
                             # Inputs are empty because this is running as an incubation without any constant inputs of C
                     
-                            results[simul] = CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
+                            results[simul] = Microbial_CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
                                                                         times=t,inputs={},clay=2.5,initvals=initvals_SA[simul],params=paramsets_SA[simul])
                     
                     
@@ -165,6 +168,7 @@ for simul in list(Whitman_sims.initvals.keys()):
                             df_temp.loc[:, 'Parameter1_initial']=parameter1
                             df_temp.loc[:, 'Parameter2_initial']=parameter2
                             df_temp.loc[:, 'Parameter3_initial']=parameter3
+                            df_temp.loc[:, "total_initial_C"]=total_initial_C
                             df = pd.concat([df, df_temp])
                             
 

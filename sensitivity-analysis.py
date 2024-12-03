@@ -12,6 +12,7 @@ Created on Fri May 10 08:33:21 2024
 import pandas as pd
 from numpy import arange
 import Microbial_sims
+# import Microbial_sims_single_MBC_pool as Microbial_sims
 import copy
 import Microbial_CORPSE_solvers
 import Microbial_CORPSE_array
@@ -26,7 +27,7 @@ import time
 timestr = time.strftime('%Y%m%d')
 
 
-df = pd.DataFrame({"time":['time'],'simulation':['simul'],
+df = pd.DataFrame({'simulation':['simul'],
                     'sensitivity_test':['name'],
                     'cumulative_C_CO2': ['CO2'],
                     'output_MBC_1':['MBC_1'],
@@ -43,7 +44,7 @@ df = pd.DataFrame({"time":['time'],'simulation':['simul'],
 
 #### Trying to calculate S index: 
 # Create list of pools to test: 
-pools = ['uFastC', 'uNecroC','uSlowC', 'uPyC']
+pools = ['uFastC', 'uNecroC','uSlowC', 'uPyC', 'MBC_1', 'MBC_2']
 
 # For each simulation (burned or not burned), run separate sensitivity test
 for simul in list(Microbial_sims.initvals.keys()):
@@ -79,28 +80,23 @@ for simul in list(Microbial_sims.initvals.keys()):
             end_time = int(t.max()*365) # Create a variable containing the last timestamp in the simulation
             output=results[simul][0].iloc[end_time]
           
-            df_temp = pd.DataFrame({"time":[t],
-                                    'simulation':[simul],
-                                'sensitivity_test':[i],
-                                'cumulative_C_CO2': [output['CO2']],
-                                'output_MBC_1':[output['MBC_1']],
-                                'output_MBC_2':[output['MBC_2']],
-                                'initial_value':[variable1],
-                                'value':[v1],
-                                'pool':[i],
-                                # 'uFastC': ['uFastC'],
-                                # 'uSlowC': ['uSlowC'],
-                                # 'uNecroC': ['uNecroC'],
-                                # 'uPyC': ['uPyC'],
-                                # 'livingMicrobeC': ['livingMicrobeC']
-                                })  
+            df_temp = pd.DataFrame({'simulation':[simul],
+                                    'sensitivity_test':[i],
+                                    'cumulative_C_CO2': [output['CO2']],
+                                    'output_MBC_1':[output['MBC_1']],
+                                    'output_MBC_2':[output['MBC_2']],
+                                    'initial_value':[variable1],
+                                    'value':[v1],
+                                    'pool':[i],
+                                    # 'uFastC': ['uFastC'],
+                                    # 'uSlowC': ['uSlowC'],
+                                    # 'uNecroC': ['uNecroC'],
+                                    # 'uPyC': ['uPyC'],
+                                    # 'livingMicrobeC': ['livingMicrobeC']
+                                    })  
     
             df = pd.concat([df, df_temp])
             
-            output = pd.DataFrame(results[simul][0]) # Create dataframe containing simulation output
-            end_time = int(t.max()*365) # Create a variable containing the last timestamp in the simulation
-            output=results[simul][0].iloc[end_time]
-  
     
   
 # Create list of parameters to test: 
@@ -143,7 +139,7 @@ for simul in list(Microbial_sims.initvals.keys()):
                     output=results[simul][0].iloc[end_time]
                   
                     df_temp = pd.DataFrame({'simulation':[simul],
-                                       'sensitivity_test':[param + "_" + C_pool],
+                                       'sensitivity_test':[param + "_" + m + "_" + C_pool],
                                        'cumulative_C_CO2': [output['CO2']],
                                        'output_MBC_1':[output['MBC_1']],
                                        'output_MBC_2':[output['MBC_2']],
