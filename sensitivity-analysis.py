@@ -184,16 +184,3 @@ for simul in list(Microbial_sims.initvals.keys()):
 df.to_csv('model_output/sensitivity_tests/' + timestr + '-' + MBCpools +'_SA_init_values.csv')   
    
             
-
-
-
-            
-# ### Initial sensitivity code...
-#     for init_slowC in [slow_C*0.8, slow_C *0.9, slow_C, slow_C*1.1, slow_C*1.2]:
-#         # for init_vmax in [slow_vmax*0.8, slow_vmax*0.9, slow_vmax, slow_vmax*1.1, slow_vmax*1.2]:
-#             name=f'sensitivity_{simul}_slowC_{init_slowC:1.4f}_slowvmax_{init_vmax:1.4f}'
-#             initvals_SA[simul]=copy.deepcopy(initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-#             initvals_SA[simul]['uSlowC']=init_slowC
-#             paramsets_SA[simul]=copy.deepcopy(paramsets[simul])
-#             paramsets_SA[simul]['vmaxref']['Slow']=init_vmax    
-#             #paramsets_SA['sensitivity']['eup']['Slow'] = sloweup  
