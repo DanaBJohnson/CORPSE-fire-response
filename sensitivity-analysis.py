@@ -11,11 +11,27 @@ Created on Fri May 10 08:33:21 2024
 
 import pandas as pd
 from numpy import arange
-import Microbial_sims
-# import Microbial_sims_single_MBC_pool as Microbial_sims
 import copy
 import Microbial_CORPSE_solvers
 import Microbial_CORPSE_array
+
+
+
+################################
+# Choose one or two trait model:
+################################
+
+import Microbial_sims
+# If using Microbial_sims
+MBCpools="two"
+
+# import Microbial_sims_single_MBC_pool as Microbial_sims
+# # If using Microbial_sims_single_MBC_pool
+# MBCpools="one"
+
+
+
+
 
 t=arange(0,70/365,1/365) # t should be the length of the incubations that we are comparing to.
             
@@ -35,6 +51,8 @@ df = pd.DataFrame({'simulation':['simul'],
                     'initial_value':['variable1'],
                     'value':[0],
                     'pool':['pool'],
+                    'pool_or_parameter':['x'],
+                    'MBC':['MBC']
                     # 'uFastC': ['uFastC'],
                     # 'uSlowC': ['uSlowC'],
                     # 'uNecroC': ['uNecroC'],
@@ -88,6 +106,8 @@ for simul in list(Microbial_sims.initvals.keys()):
                                     'initial_value':[variable1],
                                     'value':[v1],
                                     'pool':[i],
+                                    'pool_or_parameter':['pool'],
+                                    'MBC':['MBC']
                                     # 'uFastC': ['uFastC'],
                                     # 'uSlowC': ['uSlowC'],
                                     # 'uNecroC': ['uNecroC'],
@@ -114,9 +134,10 @@ for simul in list(Microbial_sims.initvals.keys()):
                 initvals_SA[simul]=copy.deepcopy(Microbial_sims.initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation                
                 paramsets_SA[simul]=copy.deepcopy(Microbial_sims.paramsets[simul])
                 param_initial=paramsets_SA[simul][param][m][C_pool]
-    
+            
+            
                 for iteration in [param_initial*0.75, param_initial*1.0, param_initial*1.25]:
-                    paramsets_SA[simul][param][C_pool]=iteration
+                    paramsets_SA[simul][param][m][C_pool]=iteration
                     
                     results={}
                     # Goes through each functional type and runs a simulation using the appropriate set of parameters and initial values
@@ -146,6 +167,8 @@ for simul in list(Microbial_sims.initvals.keys()):
                                        'initial_value':[param_initial],
                                        'value':[iteration],
                                        'pool':[C_pool],
+                                       'pool_or_parameter':['parameter'],
+                                       'MBC':[m]
                                        # 'uFastC': ['uFastC'],
                                        # 'uSlowC': ['uSlowC'],
                                        # 'uNecroC': ['uNecroC'],
@@ -158,7 +181,7 @@ for simul in list(Microbial_sims.initvals.keys()):
 
                     
                     
-df.to_csv('model_output/sensitivity_tests/' + timestr +'_SA_init_values.csv')   
+df.to_csv('model_output/sensitivity_tests/' + timestr + '-' + MBCpools +'_SA_init_values.csv')   
    
             
 
