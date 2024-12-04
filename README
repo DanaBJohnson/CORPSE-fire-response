@@ -1,14 +1,20 @@
 Scripts for running the CORPSE model:
-CORPSE_array.py:   Defines the CORPSE model
+CORPSE_array.py:	Defines the CORPSE model
+CORPSE_solvers.py:	Functions for running the CORPSE model. Includes two approaches for running the model. One uses the python ordinary differential equation (ODE) solver. The other explicitly iterates the model using a fixed time step.
+Whitman_sims.py:	This script was used to set initial post-burn parameters for CORPSE model. Includes one microbial functional pool. 
+plots.py:	This script was used to generate figures and simulations for DOE project exploring modeling post-fire soil C cycling. 
+Model-output.py:	Transforms model output data into .csv file, which can be processed elsewhere. 
+Microbial_CORPSE_array.py:	Defines CORPSE model with up to 4 discrete microbial functional groups. Modified from CORPSE_array.py
+Microbial_CORPSE_solver.py:	Functions for running Microbial_CORPSE_array.py. Modified from CORPSE_solver.py
+Microbial_sims.py:	Sets initial post-burn soil C pool sizes and parameters for up to four discrete microbial functional groups. Model can be run with fewer than 4 functional groups by setting MBC for a given pool equal to 0. 
+Microbial_sims_single_MBC_pool.py:	Duplicate of Microbial_sims.py that I am using to quickly compare models with 1 vs. 2 microbial functional groups. This script is redundant but convenient. 
+Microbial-model-output.py:	Transforms model output data into .csv file, which can be processed elsewhere. 
+Microbial_plots.py:	Generates plots of MBC pool sizes, soil C pool sizes, and cumulative CO2 respired over time
+C_conservation_check.py:	Generates variety of plots to confirm that total C within soil, MBC, and CO2 pool is conserved.
+Sensitivity-analysis.py:	Runs iterations of model with +/- 25% changes in select parameters. Generates .csv file with resulting model output, which can then be used to calculate model sensitivity to selected parameters. 
+Calibrations.py:	Generates calibration data for up to 3 select parameters by running iterations of model with +/- 10 & 20% changes in parameter values. Creates .csv file with resulting model output, which can then be used to calculate RMSE and correlation coefficients (or other metrics of comparison) with lab data. 
+Calibrating_C_pools.py: 	Generates calibration data for soil C pools and creates .csv file, which can then be used to calculate RMSE and correlation coefficients (or other metrics of comparison) with lab data. 
 
-CORPSE_solvers.py: Functions for running the CORPSE model. 
-                   Includes two approaches for running the model. One uses the python ordinary differential equation (ODE) solver. 
-                   The other explicitly iterates the model using a fixed time step.
-                   
-Whitman_sims.py:   This script was used set initial post-burn parameters for CORPSE model.
-                   
-plots.py:  This script was used to generate figures and simulations for DOE project exploring modeling post-fire soil 
-	C cycling. 
 
 
 These scripts have been tested using python 3.7.6 and the following packages:
