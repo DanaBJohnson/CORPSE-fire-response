@@ -1,6 +1,6 @@
-import Microbial_CORPSE_array as Microbial_CORPSE_deriv
+import CORPSE_array as CORPSE_deriv
 import numpy
-fields = Microbial_CORPSE_deriv.expected_pools
+fields = CORPSE_deriv.expected_pools
 fields.remove('originalC')
 
 # This is a function that translates the CORPSE model pools to/from the format that the equation solver expects
@@ -17,7 +17,7 @@ def fsolve_wrapper(SOM_list,T,theta,inputs,clay,params):
 
 
     # Call the CORPSE model function that returns the derivative (with time) of each pool
-    deriv=Microbial_CORPSE_deriv.CORPSE_deriv(SOM_dict,atleast_1d([T]),atleast_1d([theta]),params,claymod=Microbial_CORPSE_deriv.prot_clay(clay)/Microbial_CORPSE_deriv.prot_clay(20))
+    deriv=CORPSE_deriv.CORPSE_deriv(SOM_dict,atleast_1d([T]),atleast_1d([theta]),params,claymod=CORPSE_deriv.prot_clay(clay)/CORPSE_deriv.prot_clay(20))
 
     # Since we have carbon inputs, these also need to be added to those rates of change with time
     for pool in inputs.keys():
@@ -78,7 +78,7 @@ def vector_iterate(SOM_init,params,T,theta,inputs,clay,times):
         else:
             theta_step=theta
         # In this case, T, theta, clay, and all the pools in SOM are vectors containing one value per geographical location
-        deriv=Microbial_CORPSE_deriv.CORPSE_deriv(SOM,T_step,theta_step,params,claymod=Microbial_CORPSE_deriv.prot_clay(clay.values)/Microbial_CORPSE_deriv.prot_clay(2.5))
+        deriv=CORPSE_deriv.CORPSE_deriv(SOM,T_step,theta_step,params,claymod=CORPSE_deriv.prot_clay(clay.values)/CORPSE_deriv.prot_clay(2.5))
 
         # Since we have carbon inputs, these also need to be added to those rates of change with time
         for pool in inputs.keys():
