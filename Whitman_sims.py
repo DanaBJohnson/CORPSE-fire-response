@@ -8,8 +8,8 @@ import copy
 # There are three kinds of chemically-defined C (Fast, slow, and microbial necromass). "Fast" has higher maximum decomposition rate and microbial CUE
 # Each C type can be in a protected or unprotected state. When protected, it is not subject to microbial decomposition
 SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
- 'MBC_1': array(4.5),           # Active, living microbial biomass
- 'MBC_2': array(0.045),         # MBC_2 = 1% of MBC_1
+ 'MBC_1': array(4.5),           # Active, living microbial biomass - can remove MBC pools by setting them equal to 0.
+ 'MBC_2': array(0.0),           # MBC_2 = 1% of MBC_1
  'MBC_3': array(0.00),
  'MBC_4': array(0.00), 
  'pFastC': array(0.0),          # Protected fast-decomposing C

@@ -34,13 +34,13 @@ Created on Fri May 10 13:53:28 2024
 import pandas as pd
 from numpy import arange
 
-# import Microbial_sims
-# # If using Microbial_sims
-# pools="two"
+import Microbial_sims
+# If using Microbial_sims
+pools="two"
 
-import Microbial_sims_single_MBC_pool as Microbial_sims
-# If using Microbial_sims_single_MBC_pool
-pools="one"
+# import Microbial_sims_single_MBC_pool as Microbial_sims
+# # If using Microbial_sims_single_MBC_pool
+# pools="one"
 
 import copy
 import Microbial_CORPSE_solvers
@@ -58,7 +58,8 @@ df = pd.DataFrame({'time':['time'],'simulation':['simul'],
                     # 'livingMicrobeC': ['livingMicrobeC']
                     'Value1_initial':['Value1'],
                     'Value2_initial':['Value2'],
-                    'Value3_initial':['Value3']
+                    'Value3_initial':['Value3'],
+                    # 'Value4_initial':['Value4']
                     })  
   
 t=arange(0,70/365,1/365) # t should be the length of the incubations that we are comparing to.
@@ -70,32 +71,36 @@ paramsets_SA={}
 import time
 timestr = time.strftime('%Y%m%d')
 
-# Effect of varying CUE?
+# Effect of varying C pool sizes
 for simul in list(Microbial_sims.initvals.keys()):
-    
+# for simul in ['low sev burn Gleysol','high sev burn Gleysol']:
     totalC=Microbial_CORPSE_solvers.totalCarbon(Microbial_sims.results[simul][0], Microbial_CORPSE_array.microbial_pools)
     total_initial_C = totalC[0]
        
     name1='uFastC'
-    name2='uSlowC'
+    name2='uNecroC'
     name3='MBC_1'
+    # name4='MBC_2'
     
     initvals_SA[simul]=copy.deepcopy(Microbial_sims.initvals[simul])       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
     paramsets_SA[simul]=copy.deepcopy(Microbial_sims.paramsets[simul])
     variable1=initvals_SA[simul][name1]
     variable2=initvals_SA[simul][name2]
     variable3=initvals_SA[simul][name3]
-    
+    # variable4=initvals_SA[simul][name4]
+
     
     for v1 in [variable1*0.8,variable1*0.9, variable1*1.0, variable1*1.1,variable1*1.2]:
         for v2 in [variable2*0.8,variable2*0.9, variable2*1.0, variable2*1.1, variable2*1.2]:
             for v3 in [variable3*0.8,variable3*0.9, variable3*1.0, variable3*1.1,variable3*1.2]:
+                # for v4 in [variable4*0.8,variable4*0.9, variable4*1.0, variable4*1.1,variable4*1.2]:
                 
                             name=f'calibration-MBC1-{simul}-{name1}-{v1:1.4f}-{name2}-{v2:1.4f}-{name3}-{v3:1.4f}'
                             initvals_SA[simul][name1]=v1
                             initvals_SA[simul][name2]=v2
                             initvals_SA[simul][name3]=v3
-                            
+                            # initvals_SA[simul][name4]=v4
+
                             results={}
                             # Goes through each functional type and runs a simulation using the appropriate set of parameters and initial values
                             # Simulations are assuming a constant temperature of 20 C and constant moisture of 60% of saturation
@@ -131,6 +136,7 @@ for simul in list(Microbial_sims.initvals.keys()):
                             df_temp.loc[:, "Value1_initial"]=variable1
                             df_temp.loc[:, "Value2_initial"]=variable2
                             df_temp.loc[:, "Value3_initial"]=variable3
+                            # df_temp.loc[:, "Value4_initial"]=variable4
                             df_temp.loc[:, "total_initial_C"]=total_initial_C
                             df = pd.concat([df, df_temp])
                             

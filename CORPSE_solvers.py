@@ -38,7 +38,9 @@ def fsolve_wrapper(SOM_list,T,theta,inputs,clay,params):
 def ode_wrapper(SOM_list,time,Tmax,Tmin,thetamax,thetamin,*args,**kwargs):
     from numpy import cos,pi
     T=(cos(time*2*pi)+1)*(Tmax-Tmin)/2+Tmin
+    # T=(Tmax+Tmin)/2
     theta=(cos(time*2*pi)+1)*(thetamax-thetamin)/2+thetamin
+    
     return fsolve_wrapper(SOM_list,T,theta,*args,**kwargs)
 
 # Uses an alternate method: Iterating through time steps but loading all points into a vector for more efficient calculation
@@ -78,7 +80,8 @@ def vector_iterate(SOM_init,params,T,theta,inputs,clay,times):
         else:
             theta_step=theta
         # In this case, T, theta, clay, and all the pools in SOM are vectors containing one value per geographical location
-        deriv=CORPSE_deriv.CORPSE_deriv(SOM,T_step,theta_step,params,claymod=CORPSE_deriv.prot_clay(clay.values)/CORPSE_deriv.prot_clay(2.5))
+        deriv=CORPSE_deriv.CORPSE_deriv(SOM,T_step,theta_step,params,claymod=CORPSE_deriv.prot_clay(clay)/CORPSE_deriv.prot_clay(2.5))
+        # deriv=CORPSE_deriv.CORPSE_deriv(SOM,T_step,theta_step,params,claymod=CORPSE_deriv.prot_clay(clay.values)/CORPSE_deriv.prot_clay(2.5))
 
         # Since we have carbon inputs, these also need to be added to those rates of change with time
         for pool in inputs.keys():
@@ -134,42 +137,41 @@ def run_models_ODE(Tmin,Tmax,thetamin,thetamax,times,inputs,params,clay,initvals
 
         # Runs the ODE integrator
         result=odeint(ode_wrapper,ivals,times,
-            args=(atleast_1d(Tmax)[point]+273.15,atleast_1d(Tmin)[point]+273.15,atleast_1d(thetamax)[point],atleast_1d(thetamin)[point],inputs,atleast_1d(clay)[point],params))
+            args=(atleast_1d(Tmax)[point]+273.15,atleast_1d(Tmax)[point]+273.15,atleast_1d(thetamax)[point],atleast_1d(thetamin)[point],inputs,atleast_1d(clay)[point],params))
         # Store the output in a pandas DataFrame (similar to R's dataframes)
         result_df=pandas.DataFrame(result[:,:len(fields)],columns=fields,index=times)
-
         # Add it to the list of the output from each point
         SOM_out_ODE.append(result_df)
-
 
     print('Time elapsed: %1.1f s'%(time.time()-t0))
 
     return SOM_out_ODE
 
-# # Run a simulation using the explicit iterator instead of the ODE solver. Can edit this function to allow more complex temperature and moisture patterns, among other things
-# def run_models_iterator(Tmin,Tmax,thetamin,thetamax,times,inputs,params,clay,initvals):
-#     # Iterate explicitly
-#     import time
-#     from pandas import DataFrame
-#     from numpy import arange
-#     t0=time.time()
+# Run a simulation using the explicit iterator instead of the ODE solver. Can edit this function to allow more complex temperature and moisture patterns, among other things
+def run_models_iterator(Tmin,Tmax,thetamin,thetamax,times,inputs,params,clay,initvals):
+    # Iterate explicitly
+    import time
+    from pandas import DataFrame
+    from numpy import arange
+    t0=time.time()
     
-#     from numpy import cos,pi
-#     T=(cos(times[:,None]*2*pi)+1)*(Tmax.values-Tmin.values)/2+Tmin.values
-#     theta=(cos(times[:,None]*2*pi)+1)*(thetamax.values-thetamin.values)/2+thetamin.values
-    
-#     dt=times[1]-times[0]
-#     result_iterator=vector_iterate(initvals,params,T+273.15,theta,inputs,clay,times)
-#     SOM_out_iterator=[]
-#     for point in range(len(Tmin)):
-#         df=DataFrame(index=times,columns=fields)
-#         for field in result_iterator.keys():
-#             df[field]=result_iterator[field][point,:]
-#         # df['livingMicrobeN']=df['livingMicrobeC']/params['CN_microbe']
-#         SOM_out_iterator.append(df)
+    from numpy import cos,pi
+    T=(cos(times[:,None]*2*pi)+1)*(Tmax.values-Tmin.values)/2+Tmin.values
+    # theta=(cos(times[:,None]*2*pi)+1)*(thetamax.values-thetamin.values)/2+thetamin.values
+    theta=(cos(times[:,None]*2*pi)+1)*(thetamax-thetamin)/2+thetamin
 
-#     print('Time elapsed: %1.1f s'%(time.time()-t0))
-#     return SOM_out_iterator
+    dt=times[1]-times[0]
+    result_iterator=vector_iterate(initvals,params,T+273.15,theta,inputs,clay,times)
+    SOM_out_iterator=[]
+    for point in range(len(Tmin)):
+        df=DataFrame(index=times,columns=fields)
+        for field in result_iterator.keys():
+            df[field]=result_iterator[field][point,:]
+        # df['livingMicrobeN']=df['livingMicrobeC']/params['CN_microbe']
+        SOM_out_iterator.append(df)
+
+    print('Time elapsed: %1.1f s'%(time.time()-t0))
+    return SOM_out_iterator
 
 # Functions for adding together all the C pools. They work on either dictionary or dataframe data types because both have the same names for the pools
 def totalCarbon(SOM, microbial_pools):

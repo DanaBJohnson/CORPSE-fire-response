@@ -21,15 +21,13 @@ import Microbial_CORPSE_array
 # Choose one or two trait model:
 ################################
 
-import Microbial_sims
-# If using Microbial_sims
-MBCpools="two"
+# import Microbial_sims
+# # If using Microbial_sims
+# MBCpools="two"
 
-# import Microbial_sims_single_MBC_pool as Microbial_sims
-# # If using Microbial_sims_single_MBC_pool
-# MBCpools="one"
-
-
+import Microbial_sims_single_MBC_pool as Microbial_sims
+# If using Microbial_sims_single_MBC_pool
+MBCpools="one"
 
 
 

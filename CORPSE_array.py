@@ -83,7 +83,7 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
     # convert input into array
     theta=atleast_1d(theta)
     T=atleast_1d(T)
-
+    
     # Constraint theta to 0 < theta < 1
     theta[theta<0]=0.0
     theta[theta>1]=1.0
@@ -152,6 +152,7 @@ def CORPSE_deriv(SOM,T,theta,params,claymod=1.0):
 
     # Add new dead MBC to the necromass pool 
     derivs['uNecroC']=derivs['uNecroC']+deadmic_C_production
+    
     return derivs
 
 
@@ -193,7 +194,7 @@ def Vmax(Micro_pool, T,params):
     from numpy import exp
 
     # Calculate temperature adjusted vmax for each chem type
-    Vmax=dict([(t,params['vmaxref'][Micro_pool][t]*exp(-params['Ea'][t]*(1.0/(Rugas*T)-1.0/(Rugas*Tref)))) for t in chem_types]);
+    Vmax=dict([(chem,params['vmaxref'][Micro_pool][chem]*exp(-params['Ea'][chem]*(1.0/(Rugas*T)-1.0/(Rugas*Tref)))) for chem in chem_types]);
 
     return Vmax
 
