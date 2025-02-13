@@ -24,74 +24,74 @@ import Microbial_sims as Microbial_sims
 
 nrows=int(Microbial_sims.num_micro_pools)
 
-# if (Microbial_sims.num_micro_pools)>1:
-#     #nrows = len(CORPSE_array.microbial_pools)
-#     fig,ax=pyplot.subplots(nrows=nrows,ncols=1,clear=True,num='CORPSE results')
-#     p=0
-#     c=0
-#     for m in CORPSE_array.microbial_pools[0:nrows]:
-#         for sim in Microbial_sims.results:
-#             sim_color = ['palegreen','khaki','salmon','forestgreen','darkgoldenrod','darkred',
-#                          'palegreen','khaki','salmon','forestgreen','darkgoldenrod','darkred']
-#             totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-#             ax[p].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0][m]/totalC[0]*100, label = sim, color = sim_color[c], linewidth=3) # Cumulative % of initial C respired)
-#             c=c+1
-#         ax[p].set_title(m, y=1, pad=-15)
-#         ax[p].set_ylabel('Microbial pool biomass \n(% initial C)')
-#         p=p+1
-#     ax[p-1].set_xlabel('Time (days)')
-#     ax[p-1].legend(fontsize='small')
-# else:
-#     fig,ax=pyplot.subplots(nrows=1,ncols=1,clear=True,num='CORPSE results')
-#     m='MBC_1'
-#     for sim in Microbial_sims.results:
-#         totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-#         ax.plot(Microbial_sims.t*365,Microbial_sims.results[sim][0][m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
-#         ax.set_title(m, y=1, pad=-15)
-#     ax.set_ylabel('Microbial pool biomass \n(% initial C)')
-#     ax.set_xlabel('Time (days)')
-#     ax.legend(fontsize='small')
+if (Microbial_sims.num_micro_pools)>1:
+    #nrows = len(CORPSE_array.microbial_pools)
+    fig,ax=pyplot.subplots(nrows=nrows,ncols=1,clear=True,num='CORPSE results')
+    p=0
+    c=0
+    for m in CORPSE_array.microbial_pools[0:nrows]:
+        for sim in Microbial_sims.results:
+            sim_color = ['palegreen','khaki','salmon','forestgreen','darkgoldenrod','darkred',
+                          'palegreen','khaki','salmon','forestgreen','darkgoldenrod','darkred']
+            totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+            ax[p].plot(Microbial_sims.t*365,Microbial_sims.results[sim][0][m]/totalC[0]*100, label = sim, color = sim_color[c], linewidth=3) # Cumulative % of initial C respired)
+            c=c+1
+        ax[p].set_title(m, y=1, pad=-15)
+        ax[p].set_ylabel('Microbial pool biomass \n(% initial C)')
+        p=p+1
+    ax[p-1].set_xlabel('Time (days)')
+    ax[p-1].legend(fontsize='small')
+else:
+    fig,ax=pyplot.subplots(nrows=1,ncols=1,clear=True,num='CORPSE results')
+    m='MBC_1'
+    for sim in Microbial_sims.results:
+        totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+        ax.plot(Microbial_sims.t*365,Microbial_sims.results[sim][0][m]/totalC[0]*100, label = sim) # Cumulative % of initial C respired)
+        ax.set_title(m, y=1, pad=-15)
+    ax.set_ylabel('Microbial pool biomass \n(% initial C)')
+    ax.set_xlabel('Time (days)')
+    ax.legend(fontsize='small')
 
-# pyplot.subplots_adjust(hspace = 0.2)
+pyplot.subplots_adjust(hspace = 0.2)
 
-# pyplot.show(block=False)
+pyplot.show(block=False)
+pyplot.draw()
+
+
+
+
+
+# Create figure XXX
+fig,ax=pyplot.subplots(nrows=2,ncols=2,clear=True,num='CORPSE results')
+for sim in Microbial_sims.results:
+    totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
+    ax[0,0].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uFastC']/totalC[0]*100, label = sim)
+    #ax.plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uSlowC']/totalC[0]*100, color = 'blue', label = 'uSlowC')
+    ax[1,0].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uNecroC']/totalC[0]*100, label = sim)
+    ax[0,1].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uPyC']/totalC[0]*100, label = sim)
+    ax[1,1].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uSlowC']/totalC[0]*100, label = sim)
+
+#ax[0,0].set_xlabel('Time (days)')
+ax[0,0].set_ylabel('Percent of total C')
+ax[0,0].legend(loc='center left', prop={'size':6})
+ax[0,0].set_title('uFastC', y=1, pad=10)
+ax[1,0].set_xlabel('Time (days)')
+ax[1,0].set_ylabel('Percent of total C')
+#ax[1,0].legend(fontsize='small')
+ax[1,0].set_title('uNecroC', y=1, pad=-10)
+ax[0,1].set_xlabel('Time (days)')
+#ax[0,1].set_ylabel('Percent of total C')
+#ax[0,1].legend(fontsize='small')
+ax[0,1].set_title('uPyC')
+ax[1,1].set_xlabel('Time (days)')
+#ax[1,1].set_ylabel('Percent of total C')
+#ax[1,1].legend(fontsize='small')
+ax[1,1].set_title('uSlowC', y=1, pad=-10)
+
+pyplot.subplots_adjust(hspace = 0.2)
+
+pyplot.show(block=False)
 #pyplot.draw()
-
-
-
-
-
-# # Create figure XXX
-# fig,ax=pyplot.subplots(nrows=2,ncols=2,clear=True,num='CORPSE results')
-# for sim in Microbial_sims.results:
-#     totalC=CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[sim][0], 'p')
-#     ax[0,0].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uFastC']/totalC[0]*100, label = sim)
-#     #ax.plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uSlowC']/totalC[0]*100, color = 'blue', label = 'uSlowC')
-#     ax[1,0].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uNecroC']/totalC[0]*100, label = sim)
-#     ax[0,1].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uPyC']/totalC[0]*100, label = sim)
-#     ax[1,1].plot(Microbial_sims.t*365, Microbial_sims.results[sim][0]['uSlowC']/totalC[0]*100, label = sim)
-
-# #ax[0,0].set_xlabel('Time (days)')
-# ax[0,0].set_ylabel('Percent of total C')
-# ax[0,0].legend(loc='center left', prop={'size':6})
-# ax[0,0].set_title('uFastC', y=1, pad=10)
-# ax[1,0].set_xlabel('Time (days)')
-# ax[1,0].set_ylabel('Percent of total C')
-# #ax[1,0].legend(fontsize='small')
-# ax[1,0].set_title('uNecroC', y=1, pad=-10)
-# ax[0,1].set_xlabel('Time (days)')
-# #ax[0,1].set_ylabel('Percent of total C')
-# #ax[0,1].legend(fontsize='small')
-# ax[0,1].set_title('uPyC')
-# ax[1,1].set_xlabel('Time (days)')
-# #ax[1,1].set_ylabel('Percent of total C')
-# #ax[1,1].legend(fontsize='small')
-# ax[1,1].set_title('uSlowC', y=1, pad=-10)
-
-# pyplot.subplots_adjust(hspace = 0.2)
-
-# pyplot.show(block=False)
-# #pyplot.draw()
 
 
 

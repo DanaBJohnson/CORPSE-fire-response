@@ -17,7 +17,7 @@ def fsolve_wrapper(SOM_list,T,theta,inputs,clay,params):
 
 
     # Call the CORPSE model function that returns the derivative (with time) of each pool
-    deriv=CORPSE_deriv.CORPSE_deriv(SOM_dict,atleast_1d([T]),atleast_1d([theta]),params,claymod=CORPSE_deriv.prot_clay(clay)/CORPSE_deriv.prot_clay(20))
+    deriv=CORPSE_deriv.CORPSE_deriv(SOM_dict,atleast_1d([T]),atleast_1d([theta]),params,claymod=CORPSE_deriv.prot_clay(clay)/CORPSE_deriv.prot_clay(2.5))
 
     # Since we have carbon inputs, these also need to be added to those rates of change with time
     for pool in inputs.keys():
@@ -97,7 +97,7 @@ def vector_iterate(SOM_init,params,T,theta,inputs,clay,times):
 
     return SOM_out
 
-# This function runs an actual simulation using the ODE solver
+# This function runs an actual simulation using the ordinary differential equation (ODE) solver
 # Tmin and Tmax allow a sinusoidal temperature variation. Similar for thetamin and thetamax. Set min and max equal for constant state
 # times is an array of all the time steps for the simulation
 # clay is clay content (%) used to adjust protected C formation rates
@@ -163,11 +163,13 @@ def run_models_iterator(Tmin,Tmax,thetamin,thetamax,times,inputs,params,clay,ini
     dt=times[1]-times[0]
     result_iterator=vector_iterate(initvals,params,T+273.15,theta,inputs,clay,times)
     SOM_out_iterator=[]
-    for point in range(len(Tmin)):
+    for point in range(len(times)):
         df=DataFrame(index=times,columns=fields)
         for field in result_iterator.keys():
             df[field]=result_iterator[field][point,:]
         # df['livingMicrobeN']=df['livingMicrobeC']/params['CN_microbe']
+        
+        df['T'] = T[0,0:len(times)] #xxx
         SOM_out_iterator.append(df)
 
     print('Time elapsed: %1.1f s'%(time.time()-t0))

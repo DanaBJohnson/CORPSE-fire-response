@@ -14,7 +14,7 @@ import Microbial_sims_single_MBC_pool as Microbial_sims
 pools="one"
 
 # import Microbial_sims as Microbial_sims
-# # If using Microbial_sims
+# # # If using Microbial_sims
 # pools="two"
 
 
@@ -40,7 +40,8 @@ df = pd.DataFrame({"time":[0],
                    'uNecroC': [0],
                    'uPyC': [0],
                    'MBC_1': [0],
-                   'MBC_2':[0]
+                   'MBC_2':[0],
+                    'T':[0]
                     })  
 
 
@@ -49,11 +50,26 @@ df = pd.DataFrame({"time":[0],
 for simul in list(Microbial_sims.initvals.keys()):
     results={}
     # Goes through each functional type and runs a simulation using the appropriate set of parameters and initial values
-    # Simulations are assuming a constant temperature of 20 C and constant moisture of 60% of saturation
+    # Simulations are assuming a constant moisture of 60% of saturation
     # Inputs are empty because this is running as an incubation without any constant inputs of C
     
-    results[simul] = CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
-                                                    times=t,inputs={},clay=2.5,initvals=Microbial_sims.initvals[simul],params=Microbial_sims.paramsets[simul])
+    
+    
+    ### Run a simulation using the ODE solver
+    # results[simul] = CORPSE_solvers.run_models_iterator(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
+                                                    # times=t,inputs={},clay=2.5,initvals=Microbial_sims.initvals[simul],params=Microbial_sims.paramsets[simul])
+
+
+    ### Run a simulation using the explicit iterator instead of the ODE solver
+    results[simul] = CORPSE_solvers.run_models_iterator(Tmin=Microbial_sims.Tmin,Tmax=Microbial_sims.Tmax,
+                                                        thetamin=Microbial_sims.envir_params[simul]['thetamin'],
+                                                        thetamax=Microbial_sims.envir_params[simul]['thetamax'],
+                                                        times=t,inputs={},clay=2.5,
+                                                        initvals=Microbial_sims.initvals[simul],
+                                                        params=Microbial_sims.paramsets[simul])
+    
+    
+    
     
     # Ned to include cumulative C-CO2 as percent of initial total C
     #totalC=CORPSE_array.sumCtypes(Microbial_sims.results[simul][0], 'u')+CORPSE_array.sumCtypes(Microbial_sims.results[simul][0], 'p')
@@ -82,8 +98,8 @@ for simul in list(Microbial_sims.initvals.keys()):
             'uNecroC': output['uNecroC'],
             'uPyC': output['uPyC'],
             'MBC_1': output['MBC_1'],
-            'MBC_2': output['MBC_2']
-              }
+            'MBC_2': output['MBC_2'],
+            'T': output['T']}
     
     df_temp= {}
     df_temp = pd.DataFrame(temp)

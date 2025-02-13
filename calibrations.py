@@ -36,8 +36,8 @@ import Microbial_sims_single_MBC_pool as Microbial_sims
 pools="one"
 
 import copy
-import Microbial_CORPSE_solvers
-import Microbial_CORPSE_array
+import CORPSE_solvers
+import CORPSE_array
 
 
 
@@ -73,7 +73,7 @@ timestr = time.strftime('%Y%m%d')
 for simul in ['no burn Gleysol', 'no burn Histosol']: # just running parameter calibration on "no burn" simulations
 # for simul in list(Microbial_sims.initvals.keys()):
 
-    totalC=Microbial_CORPSE_solvers.totalCarbon(Microbial_sims.results[simul][0], Microbial_CORPSE_array.microbial_pools)
+    totalC=CORPSE_solvers.totalCarbon(Microbial_sims.results[simul][0], CORPSE_array.microbial_pools)
     total_initial_C = totalC[0]
     
     # name1='uFastC'
@@ -120,10 +120,20 @@ for simul in ['no burn Gleysol', 'no burn Histosol']: # just running parameter c
                             # Simulations are assuming a constant temperature of 20 C and constant moisture of 60% of saturation
                             # Inputs are empty because this is running as an incubation without any constant inputs of C
                     
-                            results[simul] = Microbial_CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
-                                                                        times=t,inputs={},clay=2.5,initvals=initvals_SA[simul],params=paramsets_SA[simul])
-                    
-                    
+                            ### Run a simulation using the ODE solver
+                            # results[simul] = CORPSE_solvers.run_models_iterator(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
+                                                                            # times=t,inputs={},clay=2.5,initvals=initvals_SA[simul],params=paramsets_SA[simul])
+
+
+                            ### Run a simulation using the explicit iterator instead of the ODE solver
+                            results[simul] = CORPSE_solvers.run_models_iterator(Tmin=Microbial_sims.Tmin,Tmax=Microbial_sims.Tmax,
+                                                                                thetamin=Microbial_sims.envir_params[simul]['thetamin'],
+                                                                                thetamax=Microbial_sims.envir_params[simul]['thetamax'],
+                                                                                times=t,inputs={},clay=2.5,
+                                                                                initvals=initvals_SA[simul],
+                                                                                params=paramsets_SA[simul])
+                            
+                            
                                 # Create csv file containing initial parameters and cumulative C-CO2 respired and simulation length
                                 # initial_pools = initvals_SA[simul]  # initial values
                                 # df_initial_pools = pd.DataFrame.from_dict(initial_pools, orient='index', columns = ['initial_pools_size'])
@@ -172,9 +182,18 @@ for simul in ['no burn Gleysol', 'no burn Histosol']: # just running parameter c
         #         # Simulations are assuming a constant temperature of 20 C and constant moisture of 60% of saturation
         #         # Inputs are empty because this is running as an incubation without any constant inputs of C
         
-        #         results[simul] = CORPSE_solvers.run_models_ODE(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
-        #                                                     times=t,inputs={},clay=2.5,initvals=initvals_SA[simul],params=paramsets_SA[simul])
-        
+        #         ### Run a simulation using the ODE solver
+        #         results[simul] = CORPSE_solvers.run_models_iterator(Tmin=18.0,Tmax=24.0,thetamin=0.5,thetamax=0.7,
+                                                        # times=t,inputs={},clay=2.5,initvals=initvals_SA[simul],params=paramsets_SA[simul])
+
+
+                # ### Run a simulation using the explicit iterator instead of the ODE solver
+                # results[simul] = CORPSE_solvers.run_models_iterator(Tmin=Microbial_sims.Tmin,Tmax=Microbial_sims.Tmax,
+                #                                             thetamin=Microbial_sims.envir_params[simul]['thetamin'],
+                #                                             thetamax=Microbial_sims.envir_params[simul]['thetamax'],
+                #                                             times=t,inputs={},clay=2.5,
+                #                                             initvals=initvals_SA[simul],
+                #                                             params=paramsets_SA[simul])
         
         #             # Create csv file containing initial parameters and cumulative C-CO2 respired and simulation length
         #             # initial_pools = initvals_SA[simul]  # initial values

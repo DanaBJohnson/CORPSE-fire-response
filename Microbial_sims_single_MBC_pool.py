@@ -75,7 +75,7 @@ totalC_org_high_sev= 13.45 # average from Johnson et al. 2023 & Johnson et al. 2
 
 SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
  # To set number of microbial pools, modify "microbial_pools" list in CORPSE_array.py
- 'MBC_1': array(totalC_sandy_unburned*0.01), # Active, living microbial biomass, 
+ 'MBC_1': array(totalC_sandy_unburned*0.010), # Active, living microbial biomass, 
  'MBC_2': array(totalC_sandy_unburned*0.0),  # MBC_2 = 1% of MBC_1
  'MBC_3': array(0.00),
  'MBC_4': array(0.00),
@@ -83,9 +83,9 @@ SOM_init={'CO2': array(0.0),    # Cumulative C-CO2 from microbial respiration
  'pNecroC': array(0.0),        # Protected microbial necromass C
  'pSlowC': array(0.0),         # Protected slow-decomposing C
  'pPyC': array(0.0),            # Protected PyC
- 'uFastC': array(totalC_sandy_unburned*0.079),          # Unprotected fast-decomposing C, 
+ 'uFastC': array(totalC_sandy_unburned*0.080),          # Unprotected fast-decomposing C, 
  'uNecroC': array(totalC_sandy_unburned*0.014),        # Unprotected microbial necromass C, 
- 'uSlowC': array(totalC_sandy_unburned*0.85),         # Unprotected slow-decomposing C, 
+ 'uSlowC': array(totalC_sandy_unburned*0.86),         # Unprotected slow-decomposing C, 
  'uPyC': array(totalC_sandy_unburned*0.04)}            # Unprotected PyC
 
 # Microbial community, no burn
@@ -99,10 +99,10 @@ initvals['no burn Histosol']['MBC_1']=array(totalC_org_unburned*0.005) # Start w
 initvals['no burn Histosol']['MBC_2']=array(totalC_org_unburned*0.0)
 initvals['no burn Histosol']['MBC_3']=array(0.0)
 initvals['no burn Histosol']['MBC_4']=array(0.0)
-initvals['no burn Histosol']['uFastC']=array(totalC_org_unburned*0.090) 
+initvals['no burn Histosol']['uFastC']=array(totalC_org_unburned*0.089) 
 initvals['no burn Histosol']['uNecroC']=array(totalC_org_unburned*0.014) 
-initvals['no burn Histosol']['uSlowC']=array(totalC_org_unburned*0.86) # Changed value from 86.0 to 60 based on calibration results
-initvals['no burn Histosol']['uPyC']=array(totalC_org_unburned*0.04)
+initvals['no burn Histosol']['uSlowC']=array(totalC_org_unburned*0.85) # Changed value from 86.0 to 60 based on calibration results
+initvals['no burn Histosol']['uPyC']=array(totalC_org_unburned*0.040)
 paramsets['no burn Histosol']=copy.deepcopy(params)
 envir_params['no burn Histosol']=copy.deepcopy(envir_params)
 envir_params['no burn Histosol']['thetamin']=array(0.5)
@@ -112,14 +112,14 @@ envir_params['no burn Histosol']['porosity']=array(0.9)
 
 # Gleysol, low severity burn
 initvals['low sev burn Gleysol']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['low sev burn Gleysol']['MBC_1']=array(totalC_sandy_low_sev*0.012) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['low sev burn Gleysol']['MBC_1']=array(totalC_sandy_low_sev*0.011) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
 initvals['low sev burn Gleysol']['MBC_2']=array(totalC_sandy_low_sev*0)
 initvals['low sev burn Gleysol']['MBC_3']=array(0.0)
 initvals['low sev burn Gleysol']['MBC_4']=array(0.0)
-initvals['low sev burn Gleysol']['uFastC']=array(totalC_sandy_low_sev*0.090) 
-initvals['low sev burn Gleysol']['uNecroC']=array(totalC_sandy_low_sev*0.016) 
-initvals['low sev burn Gleysol']['uSlowC']=array(totalC_sandy_low_sev*0.90) # Changed value from 80 to 100 based on calibration results
-initvals['low sev burn Gleysol']['uPyC']=array(totalC_sandy_low_sev*0.081)
+initvals['low sev burn Gleysol']['uFastC']=array(totalC_sandy_low_sev*0.082) 
+initvals['low sev burn Gleysol']['uNecroC']=array(totalC_sandy_low_sev*0.015) 
+initvals['low sev burn Gleysol']['uSlowC']=array(totalC_sandy_low_sev*0.82) # Changed value from 80 to 100 based on calibration results
+initvals['low sev burn Gleysol']['uPyC']=array(totalC_sandy_low_sev*0.074)
 paramsets['low sev burn Gleysol']=copy.deepcopy(params)
 envir_params['low sev burn Gleysol']=copy.deepcopy(envir_vals)
 envir_params['low sev burn Gleysol']['thetamin']=array(0.5)
@@ -135,8 +135,8 @@ initvals['low sev burn Histosol']['MBC_3']=array(0.0)
 initvals['low sev burn Histosol']['MBC_4']=array(0.0)
 initvals['low sev burn Histosol']['uFastC']=array(totalC_org_low_sev*0.049) 
 initvals['low sev burn Histosol']['uNecroC']=array(totalC_org_low_sev*0.022) 
-initvals['low sev burn Histosol']['uSlowC']=array(totalC_org_low_sev*0.789) # C
-initvals['low sev burn Histosol']['uPyC']=array(totalC_org_low_sev*0.138)
+initvals['low sev burn Histosol']['uSlowC']=array(totalC_org_low_sev*0.79) # C
+initvals['low sev burn Histosol']['uPyC']=array(totalC_org_low_sev*0.14)
 paramsets['low sev burn Histosol']=copy.deepcopy(params)
 envir_params['low sev burn Histosol']=copy.deepcopy(envir_params)
 envir_params['low sev burn Histosol']['thetamin']=array(0.5)
@@ -146,14 +146,14 @@ envir_params['low sev burn Histosol']['porosity']=array(0.4)
 
 # Gleysol, high severity burn
 initvals['high sev burn Gleysol']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['high sev burn Gleysol']['MBC_1']=array(totalC_sandy_high_sev*0.0073) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['high sev burn Gleysol']['MBC_1']=array(totalC_sandy_high_sev*0.0069) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
 initvals['high sev burn Gleysol']['MBC_2']=array(totalC_sandy_high_sev*0.0)
 initvals['high sev burn Gleysol']['MBC_3']=array(0.0)
 initvals['high sev burn Gleysol']['MBC_4']=array(0.0)
-initvals['high sev burn Gleysol']['uFastC']=array(totalC_sandy_high_sev*0.047) 
-initvals['high sev burn Gleysol']['uNecroC']=array(totalC_sandy_high_sev*0.016) 
-initvals['high sev burn Gleysol']['uSlowC']=array(totalC_sandy_high_sev*0.83) # Changed value from 80 to 100 based on calibration results
-initvals['high sev burn Gleysol']['uPyC']=array(totalC_sandy_high_sev*0.16)
+initvals['high sev burn Gleysol']['uFastC']=array(totalC_sandy_high_sev*0.044) 
+initvals['high sev burn Gleysol']['uNecroC']=array(totalC_sandy_high_sev*0.015) 
+initvals['high sev burn Gleysol']['uSlowC']=array(totalC_sandy_high_sev*0.78) # Changed value from 80 to 100 based on calibration results
+initvals['high sev burn Gleysol']['uPyC']=array(totalC_sandy_high_sev*0.15)
 paramsets['high sev burn Gleysol']=copy.deepcopy(params)
 envir_params['high sev burn Gleysol']=copy.deepcopy(envir_vals)
 envir_params['high sev burn Gleysol']['thetamin']=array(0.5)
@@ -163,13 +163,13 @@ envir_params['high sev burn Gleysol']['porosity']=array(0.4)
 
 # Histosol, high severity burn
 initvals['high sev burn Histosol']=copy.deepcopy(SOM_init)       # Makes a copy of the default initial values. Need to use deepcopy so changing the value here doesn't change it for every simulation
-initvals['high sev burn Histosol']['MBC_1']=array(totalC_org_high_sev*0.0052) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
+initvals['high sev burn Histosol']['MBC_1']=array(totalC_org_high_sev*0.0050) # Start with low initial microbial biomass. Assumes this simulation starts right after the fire
 initvals['high sev burn Histosol']['MBC_2']=array(totalC_org_high_sev*0.0)
 initvals['high sev burn Histosol']['MBC_3']=array(0.0)
 initvals['high sev burn Histosol']['MBC_4']=array(0.0)
-initvals['high sev burn Histosol']['uFastC']=array(totalC_org_high_sev*0.031) 
-initvals['high sev burn Histosol']['uNecroC']=array(totalC_org_high_sev*0.028) 
-initvals['high sev burn Histosol']['uSlowC']=array(totalC_org_high_sev*0.87) # C
+initvals['high sev burn Histosol']['uFastC']=array(totalC_org_high_sev*0.030) 
+initvals['high sev burn Histosol']['uNecroC']=array(totalC_org_high_sev*0.027) 
+initvals['high sev burn Histosol']['uSlowC']=array(totalC_org_high_sev*0.84) # C
 initvals['high sev burn Histosol']['uPyC']=array(totalC_org_high_sev*0.10)
 paramsets['high sev burn Histosol']=copy.deepcopy(params)
 envir_params['high sev burn Histosol']=copy.deepcopy(envir_params)
